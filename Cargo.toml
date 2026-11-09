@@ -1,0 +1,35 @@
+[package]
+name = "clayui"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.83"
+description = "Find proven UI components across the standard UI libraries, compare variants and download their code as examples."
+license = "MIT"
+repository = "https://github.com/behavio1/clay-ui"
+publish = false
+
+[lib]
+name = "clayui_lib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "clayui"
+path = "src/main.rs"
+
+[dependencies]
+# Blocking HTTP over rustls: no OpenSSL or other native TLS on any platform.
+ureq = { version = "2.12", default-features = false, features = ["tls"] }
+# preserve_order keeps JSON key order like JS objects; float_roundtrip parses numbers exactly like JSON.parse.
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+# SHA-256 for the vector cache keys. Already required by rustls, so it adds nothing.
+ring = "0.17"
+# NFD for query normalization, matching String.prototype.normalize.
+unicode-normalization = "0.1"
+# O_NOFOLLOW for writes that must not follow symbolic links.
+libc = "0.2"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true

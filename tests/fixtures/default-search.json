@@ -1,0 +1,717 @@
+{
+  "previousReleaseSha256": "681883d434a9f6c898fd3c2d699895199e6fa2547bc5b9a94d388be0fffeaa75",
+  "index": {
+    "sources": {
+      "shadcn": {
+        "items": [
+          {
+            "id": "shadcn/table",
+            "source": "shadcn",
+            "name": "table",
+            "title": "table",
+            "description": "Data table filtering sorting",
+            "keywords": [],
+            "gaps": [
+              "pro-only"
+            ],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "shadcn/filter-table",
+            "source": "shadcn",
+            "name": "filter-table",
+            "title": "filter-table",
+            "description": "Filter table rows",
+            "keywords": [],
+            "gaps": [
+              "needs-key"
+            ],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "shadcn/table-sort",
+            "source": "shadcn",
+            "name": "table-sort",
+            "title": "table-sort",
+            "description": "Table sort rows",
+            "keywords": [],
+            "gaps": [
+              "no-source-listing"
+            ],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "shadcn/data-table",
+            "source": "shadcn",
+            "name": "data-table",
+            "title": "data-table",
+            "description": "Data table filtering and sorting",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "shadcn/button",
+            "source": "shadcn",
+            "name": "button",
+            "title": "button",
+            "description": "Action button",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "shadcn/calendar",
+            "source": "shadcn",
+            "name": "calendar",
+            "title": "calendar",
+            "description": "Date range picker booking stays",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "shadcn/skeleton",
+            "source": "shadcn",
+            "name": "skeleton",
+            "title": "skeleton",
+            "description": "Loading placeholder skeleton",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "shadcn/table-copy",
+            "source": "shadcn",
+            "name": "table-copy",
+            "title": "table-copy",
+            "description": "Data table filtering and sorting",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "shadcn/table-copy",
+            "source": "shadcn",
+            "name": "table-copy",
+            "title": "table-copy",
+            "description": "Data table filtering and sorting",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          }
+        ],
+        "syncedAt": "2026-11-09T00:00:00.000Z",
+        "error": null
+      },
+      "magicui": {
+        "items": [
+          {
+            "id": "magicui/table",
+            "source": "magicui",
+            "name": "table",
+            "title": "table",
+            "description": "Data table filtering sorting",
+            "keywords": [],
+            "gaps": [
+              "pro-only"
+            ],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "magicui/filter-table",
+            "source": "magicui",
+            "name": "filter-table",
+            "title": "filter-table",
+            "description": "Filter table rows",
+            "keywords": [],
+            "gaps": [
+              "needs-key"
+            ],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "magicui/table-sort",
+            "source": "magicui",
+            "name": "table-sort",
+            "title": "table-sort",
+            "description": "Table sort rows",
+            "keywords": [],
+            "gaps": [
+              "no-source-listing"
+            ],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "magicui/data-table",
+            "source": "magicui",
+            "name": "data-table",
+            "title": "data-table",
+            "description": "Data table filtering and sorting",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "magicui/button",
+            "source": "magicui",
+            "name": "button",
+            "title": "button",
+            "description": "Action button",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "magicui/calendar",
+            "source": "magicui",
+            "name": "calendar",
+            "title": "calendar",
+            "description": "Date range picker booking stays",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "magicui/skeleton",
+            "source": "magicui",
+            "name": "skeleton",
+            "title": "skeleton",
+            "description": "Loading placeholder skeleton",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "magicui/table-copy",
+            "source": "magicui",
+            "name": "table-copy",
+            "title": "table-copy",
+            "description": "Data table filtering and sorting",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "magicui/table-copy",
+            "source": "magicui",
+            "name": "table-copy",
+            "title": "table-copy",
+            "description": "Data table filtering and sorting",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          }
+        ],
+        "syncedAt": "2026-11-09T00:00:00.000Z",
+        "error": null
+      },
+      "beautifului": {
+        "items": [
+          {
+            "id": "beautifului/table",
+            "source": "beautifului",
+            "name": "table",
+            "title": "table",
+            "description": "Data table filtering sorting",
+            "keywords": [],
+            "gaps": [
+              "pro-only"
+            ],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "beautifului/filter-table",
+            "source": "beautifului",
+            "name": "filter-table",
+            "title": "filter-table",
+            "description": "Filter table rows",
+            "keywords": [],
+            "gaps": [
+              "needs-key"
+            ],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "beautifului/table-sort",
+            "source": "beautifului",
+            "name": "table-sort",
+            "title": "table-sort",
+            "description": "Table sort rows",
+            "keywords": [],
+            "gaps": [
+              "no-source-listing"
+            ],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "beautifului/data-table",
+            "source": "beautifului",
+            "name": "data-table",
+            "title": "data-table",
+            "description": "Data table filtering and sorting",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "beautifului/button",
+            "source": "beautifului",
+            "name": "button",
+            "title": "button",
+            "description": "Action button",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "beautifului/calendar",
+            "source": "beautifului",
+            "name": "calendar",
+            "title": "calendar",
+            "description": "Date range picker booking stays",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "beautifului/skeleton",
+            "source": "beautifului",
+            "name": "skeleton",
+            "title": "skeleton",
+            "description": "Loading placeholder skeleton",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "beautifului/table-copy",
+            "source": "beautifului",
+            "name": "table-copy",
+            "title": "table-copy",
+            "description": "Data table filtering and sorting",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "beautifului/table-copy",
+            "source": "beautifului",
+            "name": "table-copy",
+            "title": "table-copy",
+            "description": "Data table filtering and sorting",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          }
+        ],
+        "syncedAt": "2026-11-09T00:00:00.000Z",
+        "error": null
+      },
+      "base-ui": {
+        "items": [
+          {
+            "id": "base-ui/table",
+            "source": "base-ui",
+            "name": "table",
+            "title": "table",
+            "description": "Data table filtering sorting",
+            "keywords": [],
+            "gaps": [
+              "pro-only"
+            ],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "base-ui/filter-table",
+            "source": "base-ui",
+            "name": "filter-table",
+            "title": "filter-table",
+            "description": "Filter table rows",
+            "keywords": [],
+            "gaps": [
+              "needs-key"
+            ],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "base-ui/table-sort",
+            "source": "base-ui",
+            "name": "table-sort",
+            "title": "table-sort",
+            "description": "Table sort rows",
+            "keywords": [],
+            "gaps": [
+              "no-source-listing"
+            ],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "base-ui/data-table",
+            "source": "base-ui",
+            "name": "data-table",
+            "title": "data-table",
+            "description": "Data table filtering and sorting",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "base-ui/button",
+            "source": "base-ui",
+            "name": "button",
+            "title": "button",
+            "description": "Action button",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "base-ui/calendar",
+            "source": "base-ui",
+            "name": "calendar",
+            "title": "calendar",
+            "description": "Date range picker booking stays",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "base-ui/skeleton",
+            "source": "base-ui",
+            "name": "skeleton",
+            "title": "skeleton",
+            "description": "Loading placeholder skeleton",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "base-ui/table-copy",
+            "source": "base-ui",
+            "name": "table-copy",
+            "title": "table-copy",
+            "description": "Data table filtering and sorting",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          },
+          {
+            "id": "base-ui/table-copy",
+            "source": "base-ui",
+            "name": "table-copy",
+            "title": "table-copy",
+            "description": "Data table filtering and sorting",
+            "keywords": [],
+            "gaps": [],
+            "license": "MIT",
+            "previewUrl": null
+          }
+        ],
+        "syncedAt": "2026-11-09T00:00:00.000Z",
+        "error": null
+      }
+    }
+  },
+  "cases": [
+    {
+      "args": [
+        "search",
+        "data table filtering sorting",
+        "--limit",
+        "3",
+        "--json"
+      ],
+      "order": "[\"base-ui/data-table\",\"beautifului/data-table\",\"magicui/data-table\"]"
+    },
+    {
+      "args": [
+        "search",
+        "data table filtering sorting",
+        "--limit",
+        "20",
+        "--json"
+      ],
+      "order": "[\"base-ui/data-table\",\"beautifului/data-table\",\"magicui/data-table\",\"shadcn/data-table\",\"base-ui/table\",\"beautifului/table\",\"magicui/table\",\"shadcn/table\",\"base-ui/table-copy\",\"base-ui/table-copy\",\"beautifului/table-copy\",\"beautifului/table-copy\",\"magicui/table-copy\",\"magicui/table-copy\",\"shadcn/table-copy\",\"shadcn/table-copy\",\"base-ui/filter-table\",\"beautifului/filter-table\",\"magicui/filter-table\",\"shadcn/filter-table\"]"
+    },
+    {
+      "args": [
+        "search",
+        "data table filtering sorting",
+        "--limit",
+        "3",
+        "--json",
+        "--source",
+        "shadcn"
+      ],
+      "order": "[\"shadcn/data-table\",\"shadcn/table\",\"shadcn/table-copy\"]"
+    },
+    {
+      "args": [
+        "search",
+        "data table filtering sorting",
+        "--limit",
+        "20",
+        "--json",
+        "--source",
+        "shadcn"
+      ],
+      "order": "[\"shadcn/data-table\",\"shadcn/table\",\"shadcn/table-copy\",\"shadcn/table-copy\",\"shadcn/filter-table\",\"shadcn/table-sort\"]"
+    },
+    {
+      "args": [
+        "search",
+        "date range picker booking stays",
+        "--limit",
+        "3",
+        "--json"
+      ],
+      "order": "[\"base-ui/calendar\",\"beautifului/calendar\",\"magicui/calendar\"]"
+    },
+    {
+      "args": [
+        "search",
+        "date range picker booking stays",
+        "--limit",
+        "20",
+        "--json"
+      ],
+      "order": "[\"base-ui/calendar\",\"beautifului/calendar\",\"magicui/calendar\",\"shadcn/calendar\"]"
+    },
+    {
+      "args": [
+        "search",
+        "date range picker booking stays",
+        "--limit",
+        "3",
+        "--json",
+        "--source",
+        "shadcn"
+      ],
+      "order": "[\"shadcn/calendar\"]"
+    },
+    {
+      "args": [
+        "search",
+        "date range picker booking stays",
+        "--limit",
+        "20",
+        "--json",
+        "--source",
+        "shadcn"
+      ],
+      "order": "[\"shadcn/calendar\"]"
+    },
+    {
+      "args": [
+        "search",
+        "skeleton loading placeholder",
+        "--limit",
+        "3",
+        "--json"
+      ],
+      "order": "[\"base-ui/skeleton\",\"beautifului/skeleton\",\"magicui/skeleton\"]"
+    },
+    {
+      "args": [
+        "search",
+        "skeleton loading placeholder",
+        "--limit",
+        "20",
+        "--json"
+      ],
+      "order": "[\"base-ui/skeleton\",\"beautifului/skeleton\",\"magicui/skeleton\",\"shadcn/skeleton\"]"
+    },
+    {
+      "args": [
+        "search",
+        "skeleton loading placeholder",
+        "--limit",
+        "3",
+        "--json",
+        "--source",
+        "shadcn"
+      ],
+      "order": "[\"shadcn/skeleton\"]"
+    },
+    {
+      "args": [
+        "search",
+        "skeleton loading placeholder",
+        "--limit",
+        "20",
+        "--json",
+        "--source",
+        "shadcn"
+      ],
+      "order": "[\"shadcn/skeleton\"]"
+    },
+    {
+      "args": [
+        "search",
+        "button",
+        "--limit",
+        "3",
+        "--json"
+      ],
+      "order": "[\"base-ui/button\",\"beautifului/button\",\"magicui/button\"]"
+    },
+    {
+      "args": [
+        "search",
+        "button",
+        "--limit",
+        "20",
+        "--json"
+      ],
+      "order": "[\"base-ui/button\",\"beautifului/button\",\"magicui/button\",\"shadcn/button\"]"
+    },
+    {
+      "args": [
+        "search",
+        "button",
+        "--limit",
+        "3",
+        "--json",
+        "--source",
+        "shadcn"
+      ],
+      "order": "[\"shadcn/button\"]"
+    },
+    {
+      "args": [
+        "search",
+        "button",
+        "--limit",
+        "20",
+        "--json",
+        "--source",
+        "shadcn"
+      ],
+      "order": "[\"shadcn/button\"]"
+    },
+    {
+      "args": [
+        "search",
+        "table",
+        "--limit",
+        "3",
+        "--json"
+      ],
+      "order": "[\"base-ui/table\",\"beautifului/table\",\"magicui/table\"]"
+    },
+    {
+      "args": [
+        "search",
+        "table",
+        "--limit",
+        "20",
+        "--json"
+      ],
+      "order": "[\"base-ui/table\",\"beautifului/table\",\"magicui/table\",\"shadcn/table\",\"base-ui/filter-table\",\"base-ui/table-sort\",\"beautifului/filter-table\",\"beautifului/table-sort\",\"magicui/filter-table\",\"magicui/table-sort\",\"shadcn/filter-table\",\"shadcn/table-sort\",\"base-ui/data-table\",\"base-ui/table-copy\",\"beautifului/data-table\",\"beautifului/table-copy\",\"magicui/data-table\",\"magicui/table-copy\",\"shadcn/data-table\",\"shadcn/table-copy\"]"
+    },
+    {
+      "args": [
+        "search",
+        "table",
+        "--limit",
+        "3",
+        "--json",
+        "--source",
+        "shadcn"
+      ],
+      "order": "[\"shadcn/table\",\"shadcn/filter-table\",\"shadcn/table-sort\"]"
+    },
+    {
+      "args": [
+        "search",
+        "table",
+        "--limit",
+        "20",
+        "--json",
+        "--source",
+        "shadcn"
+      ],
+      "order": "[\"shadcn/table\",\"shadcn/filter-table\",\"shadcn/table-sort\",\"shadcn/data-table\",\"shadcn/table-copy\",\"shadcn/table-copy\"]"
+    },
+    {
+      "args": [
+        "search",
+        "qqqzzz",
+        "--limit",
+        "3",
+        "--json"
+      ],
+      "order": "[]"
+    },
+    {
+      "args": [
+        "search",
+        "qqqzzz",
+        "--limit",
+        "20",
+        "--json"
+      ],
+      "order": "[]"
+    },
+    {
+      "args": [
+        "search",
+        "qqqzzz",
+        "--limit",
+        "3",
+        "--json",
+        "--source",
+        "shadcn"
+      ],
+      "order": "[]"
+    },
+    {
+      "args": [
+        "search",
+        "qqqzzz",
+        "--limit",
+        "20",
+        "--json",
+        "--source",
+        "shadcn"
+      ],
+      "order": "[]"
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: The tag, launcher, native dependencies and Cargo version must agree
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          npm_version="$(node -p "require('./package.json').version")"
+          cargo_version="$(grep -m1 '^version' Cargo.toml | sed -E 's/.*"(.+)".*/\1/')"
+          test "$tag" = "$npm_version" && test "$tag" = "$cargo_version"
+          node --input-type=module -e "import fs from 'node:fs'; import assert from 'node:assert/strict'; const p=JSON.parse(fs.readFileSync('package.json')); assert.deepEqual(Object.keys(p.optionalDependencies).sort(), ['darwin-arm64','darwin-x64','linux-arm64','linux-x64','win32-x64'].map(k=>'clayui-'+k).sort()); for (const v of Object.values(p.optionalDependencies)) assert.equal(v,p.version);"
+
+  build:
+    needs: check-version
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - { key: darwin-arm64, runner: macos-latest, target: aarch64-apple-darwin, binary: clayui }
+          - { key: darwin-x64, runner: macos-15-intel, target: x86_64-apple-darwin, binary: clayui }
+          - { key: linux-x64, runner: ubuntu-latest, target: x86_64-unknown-linux-musl, binary: clayui, musl: true }
+          - { key: linux-arm64, runner: ubuntu-24.04-arm, target: aarch64-unknown-linux-musl, binary: clayui, musl: true }
+          - { key: win32-x64, runner: windows-latest, target: x86_64-pc-windows-msvc, binary: clayui.exe, static_crt: true }
+    runs-on: ${{ matrix.runner }}
+    env:
+      CC_aarch64_unknown_linux_musl: musl-gcc
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.22.1
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8
+        with:
+          toolchain: 1.83.0
+          targets: ${{ matrix.target }}
+          components: rustfmt, clippy
+      - name: Install the musl toolchain
+        if: matrix.musl
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+      - name: Test and lint
+        shell: bash
+        run: |
+          cargo fmt --check
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo test --locked --target ${{ matrix.target }}
+          npm run test:node
+          python scripts/third-party-notices.py --check
+      - name: Remap release paths
+        shell: bash
+        run: |
+          build_home="$(node -p "require('node:os').homedir()")"
+          build_root="$(node -p "process.cwd()")"
+          flags="--remap-path-prefix=$build_home=/build --remap-path-prefix=$build_root=/clayui"
+          if [ '${{ matrix.static_crt }}' = 'true' ]; then flags="$flags -C target-feature=+crt-static"; fi
+          echo "RUSTFLAGS=$flags" >> "$GITHUB_ENV"
+      - name: Build
+        run: cargo build --locked --release --target ${{ matrix.target }}
+      - name: Create and test the packed platform package
+        shell: bash
+        run: |
+          node scripts/build-platform-package.mjs ${{ matrix.key }} target/${{ matrix.target }}/release/${{ matrix.binary }} dist-npm
+          node scripts/packed-smoke.mjs ${{ matrix.key }} dist-npm/clayui-${{ matrix.key }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: clayui-${{ matrix.key }}
+          path: dist-npm/clayui-${{ matrix.key }}
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.22.1
+      - run: npm install --global npm@11.20.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          path: dist-npm
+      - name: Publish the platform packages with OIDC
+        run: |
+          for folder in dist-npm/clayui-*; do
+            chmod 755 "$folder"/clayui*
+            npm publish "$folder" --access public --provenance
+          done
+          for name in $(node -p "Object.keys(require('./package.json').optionalDependencies).join(' ')"); do
+            npm view "$name@$(node -p "require('./package.json').version")" version
+          done
+      - name: Publish the launcher with OIDC
+        run: npm publish --access public --provenance

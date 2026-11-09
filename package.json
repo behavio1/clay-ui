@@ -1,0 +1,50 @@
+{
+  "name": "clayui",
+  "version": "0.1.0",
+  "description": "Find proven UI components across the standard UI libraries, compare variants and download their code for your agent to mold into your product.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Behavio",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/behavio1/clay-ui.git"
+  },
+  "homepage": "https://github.com/behavio1/clay-ui#readme",
+  "bugs": "https://github.com/behavio1/clay-ui/issues",
+  "keywords": [
+    "ui",
+    "components",
+    "shadcn",
+    "react",
+    "cli",
+    "ai-agents",
+    "agent-skills",
+    "claude-code",
+    "codex"
+  ],
+  "engines": {
+    "node": ">=18.20.8"
+  },
+  "bin": {
+    "clayui": "bin/launcher.mjs"
+  },
+  "optionalDependencies": {
+    "clayui-darwin-arm64": "0.1.0",
+    "clayui-darwin-x64": "0.1.0",
+    "clayui-linux-x64": "0.1.0",
+    "clayui-linux-arm64": "0.1.0",
+    "clayui-win32-x64": "0.1.0"
+  },
+  "files": [
+    "bin/launcher.mjs",
+    "skills",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "cargo test",
+    "test:node": "node --test \"test/*.test.mjs\"",
+    "e2e": "node e2e/live.mjs",
+    "parity": "node e2e/parity.mjs"
+  }
+}

@@ -1,0 +1,13 @@
+node_modules/
+.env
+*.log
+.DS_Store
+target/
+dist-npm/
+
+.env.*
+*.tgz
+.vercel/
+.cache/
+coverage/
+.clayui-examples/
