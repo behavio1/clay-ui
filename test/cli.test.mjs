@@ -165,7 +165,8 @@ test('R01 get --force refuses to write through symlinks', () => {
   assert.deepEqual(readdirSync(outside), []);
 });
 
-test('R01 a symlinked final file or clayui.json is not followed', () => {
+// Unix only, like the Rust symlink tests: Windows file symlinks need special rights.
+test('R01 a symlinked final file or clayui.json is not followed', { skip: process.platform === 'win32' }, () => {
   const cache = temp();
   const out = temp();
   const victim = path.join(temp(), 'victim.txt');
