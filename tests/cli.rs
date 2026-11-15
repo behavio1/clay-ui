@@ -160,6 +160,8 @@ fn cli_with(args: &[&str], mock: &Mock, options: Options) -> Run {
         .args(args)
         .env_clear()
         .env("PATH", std::env::var("PATH").unwrap())
+        // Windows sockets fail to start without SYSTEMROOT.
+        .envs(std::env::var_os("SYSTEMROOT").map(|root| ("SYSTEMROOT", root)))
         .env("HOME", options.home.unwrap_or(&home))
         .env("USERPROFILE", options.home.unwrap_or(&home))
         .env("CLAYUI_CACHE_DIR", options.cache)
