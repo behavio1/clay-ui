@@ -95,7 +95,7 @@ jobs:
         run: |
           for folder in dist-npm/clayui-*; do
             chmod 755 "$folder"/clayui*
-            npm publish "$folder" --access public --provenance
+            npm publish "./$folder" --access public --provenance
           done
           for name in $(node -p "Object.keys(require('./package.json').optionalDependencies).join(' ')"); do
             npm view "$name@$(node -p "require('./package.json').version")" version
