@@ -29,7 +29,7 @@ for package in sorted(metadata['packages'], key=lambda p: (p['name'], p['version
         copyrights = set()
         for file in folder.rglob('*'):
             if file.is_file() and file.suffix in ('.c', '.h', '.rs', '.pl', '.S', '.asm'):
-                for line in file.read_text(errors='replace').splitlines():
+                for line in file.read_text(encoding='utf-8', errors='replace').splitlines():
                     if 'copyright' in line.lower() and len(line) < 500:
                         copyrights.add(line.strip(' /*#;'))
         sections.append('\nSource copyright notices:\n\n```text\n' + '\n'.join(sorted(copyrights)) + '\n```\n')
@@ -38,9 +38,9 @@ for _, (label, text) in texts.items():
 result = ''.join(sections)
 output = root / 'THIRD_PARTY_NOTICES.md'
 if '--check' in sys.argv:
-    if not output.exists() or output.read_text() != result:
+    if not output.exists() or output.read_text(encoding='utf-8') != result:
         raise SystemExit('Notices differ from locked crate license files')
     print('PASS: every notice matches the locked crate license files')
 else:
-    output.write_text(result)
+    output.write_text(result, encoding='utf-8', newline='\n')
     print('Wrote THIRD_PARTY_NOTICES.md from locked crate license files')
