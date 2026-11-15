@@ -14,7 +14,7 @@ for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
     writeFileSync(path.join(folder, 'package.json'), '{}');
     const marker = path.join(work, 'ready');
     const stopped = path.join(work, 'stopped');
-    writeFileSync(path.join(folder, 'clayui'), `#!${process.execPath}\nimport('node:fs').then(fs => { fs.writeFileSync(${JSON.stringify(marker)}, String(process.pid)); process.on('${signal}', () => { fs.writeFileSync(${JSON.stringify(stopped)}, '${signal}'); process.exit(37); }); setInterval(()=>{},1000); });\n`, { mode: 0o755 });
+    writeFileSync(path.join(folder, 'clayui'), `#!${process.execPath}\nimport('node:fs').then(fs => { process.on('${signal}', () => { fs.writeFileSync(${JSON.stringify(stopped)}, '${signal}'); process.exit(37); }); fs.writeFileSync(${JSON.stringify(marker)}, String(process.pid)); setInterval(()=>{},1000); });\n`, { mode: 0o755 });
     copyFileSync(new URL('../bin/launcher.mjs', import.meta.url), path.join(work, 'launcher.mjs'));
     const child = spawn(process.execPath, [path.join(work, 'launcher.mjs')], { env: { PATH: process.env.PATH, HOME: work, USERPROFILE: work }, stdio: 'ignore' });
     const exit = once(child, 'exit');
