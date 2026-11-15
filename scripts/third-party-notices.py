@@ -22,7 +22,7 @@ for package in sorted(metadata['packages'], key=lambda p: (p['name'], p['version
         raw = file.read_bytes()
         checksum = hashlib.sha256(raw).hexdigest()
         label = 'license-' + checksum[:16]
-        sections.append(f"\n- `{file.relative_to(folder)}` (SHA-256 `{checksum}`): [full text](#{label}).\n")
+        sections.append(f"\n- `{file.relative_to(folder).as_posix()}` (SHA-256 `{checksum}`): [full text](#{label}).\n")
         texts.setdefault(checksum, (label, raw.decode('utf-8')))
     # ring's ISC file points at per-source copyright notices. Preserve those too.
     if package['name'] == 'ring':
