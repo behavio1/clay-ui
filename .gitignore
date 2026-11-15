@@ -11,3 +11,6 @@ dist-npm/
 .cache/
 coverage/
 .clayui-examples/
+
+# Keep the npm launcher even when a global ignore excludes bin/
+!bin/
