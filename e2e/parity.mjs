@@ -26,7 +26,28 @@ const tree = (paths) => ({ tree: paths.map((file) => ({ path: file })) });
 const tagPage = (tag, rows) => rows.map(([title, user, slug, variant]) => `- [${title}](https://21st.dev/@${user}/components/${slug}${variant ? `/${variant}` : ''}.md) description`).join('\n');
 const llms = `# Base UI\n\n## Overview\n- [Intro](https://base-ui.com/react/overview.md): skip\n\n## Components\n${['dialog', 'menu', 'popover', 'select', 'tabs', 'slider'].map((name) => `- [${name}](https://base-ui.com/react/components/${name}.md): A ${name} primitive`).join('\n')}\n\n## Utilities\n- [X](https://base-ui.com/react/components/x.md): skip\n`;
 
+// Sources added after the Node reference implementation. Parity covers only the sources both CLIs share,
+// so these registries answer empty and their entries are left out of the comparison.
+const RUST_ONLY = ['evilcharts', 'origin', 'kibo', 'reui', 'blocks-so', 'motion-primitives', 'smoothui', 'fancy', 'beui', 'uiarc', 'devl', 'cult', '8bitcn', 'shadcn-space', 'ui-layouts', 'spectrum', 'ruixen', 'watermelon', 'avara', 'hextaui', 'vengeance', 'componentry', 'asciicn'];
+const RUST_ONLY_INDICES = ['evilcharts.com/r/registry.json', 'raw.githubusercontent.com/cosscom/ui/main/apps/origin/registry.json', 'www.kibo-ui.com/r/registry.json', 'reui.io/r/styles/base-nova/registry.json', 'blocks.so/r/registry.json', 'motion-primitives.com/c/registry.json', 'smoothui.dev/r/registry.json', 'fancycomponents.dev/r/registry.json', 'beui.dev/r/registry.json', 'uiarc.dev/r/registry.json', 'devl.dev/r/registry.json', 'www.cult-ui.com/r/registry.json', 'www.8bitcn.com/r/registry.json', 'shadcnspace.com/r/registry.json', 'raw.githubusercontent.com/shadcnspace/shadcnspace/main/registry.json', 'ui-layouts.com/r/registry.json', 'ui.spectrumhq.in/r/registry.json', 'ruixen.com/registry.json', 'registry.watermelon.sh/r/registry.json', 'avaraui.com/r/registry.json', 'hextaui.com/r/registry.json', 'vengenceui.com/r/registry.json', 'componentry.dev/r/registry.json', 'asciicn.dev/r/registry.json'];
+const rustOnlyLine = (line) => RUST_ONLY.some((id) => new RegExp(`(^|[\\s"/])${id.replace('.', '\\.')}([\\s":/]|$)`).test(line));
+const sharedOnly = (result) => ({ ...result, out: result.out.split('\n').filter((line) => !rustOnlyLine(line)).join('\n') });
+
+// Rust-only sources are reported as skipped in searches; the Node reference does not know them.
+function withoutRustOnlySkips(result) {
+  let out = result.out;
+  try {
+    const body = JSON.parse(out);
+    if (Array.isArray(body.skipped)) {
+      body.skipped = body.skipped.filter((entry) => !RUST_ONLY.includes(entry.source));
+      out = `${JSON.stringify(body, null, 2)}\n`;
+    }
+  } catch {}
+  return { ...result, out, err: result.err.split('\n').filter((line) => !rustOnlyLine(line)).join('\n') };
+}
+
 function fixture(host, url) {
+  if (RUST_ONLY_INDICES.includes(`${host}${url}`)) return { items: [] };
   const full = `${host}${url}`;
   if (host === 'ui.shadcn.com') {
     if (url === '/r/index.json') return [...NAMES.map((name) => registryItem(name, { meta: { links: { radix: { docs: `https://ui.shadcn.com/docs/${name}` } } } })), { name: 'hidden', type: 'registry:lib' }, { name: '../bad', type: 'registry:ui' }];
@@ -199,11 +220,12 @@ let rustRunner;
 
 async function compare(label, args, { env, compareErr = false } = {}) {
   const [node, rust] = await Promise.all([nodeRunner.run(args, env), rustRunner.run(args, env)]);
-  return record(`${label}: ${args.join(' ')}`, node, rust, compareErr);
+  return record(`${label}: ${args.join(' ')}`, node, withoutRustOnlySkips(rust), compareErr);
 }
 
 function comparableIndex(runner) {
   const index = JSON.parse(readFileSync(path.join(runner.cache, 'index.json'), 'utf8'));
+  for (const id of RUST_ONLY) delete index.sources[id];
   for (const entry of Object.values(index.sources)) entry.syncedAt = entry.syncedAt ? '<time>' : null;
   return JSON.stringify(index);
 }
@@ -219,11 +241,14 @@ async function mockParity() {
   // Sync log lines appear in completion order in both CLIs, so they are compared sorted.
   const [nodeSync, rustSync] = await Promise.all([nodeRunner.run(['sync']), rustRunner.run(['sync'])]);
   const sorted = (result) => ({ ...result, out: result.out.split('\n').sort().join('\n') });
-  record('sync (no key)', sorted(nodeSync), sorted(rustSync));
+  record('sync (no key)', sorted(nodeSync), sorted(sharedOnly(rustSync)));
   assert.equal(comparableIndex(nodeRunner), comparableIndex(rustRunner), 'index.json differs after sync');
   results.passed += 1;
-  await compare('sources', ['sources', '--json']);
-  await compare('sources text', ['sources']);
+  for (const [label, args] of [['sources', ['sources', '--json']], ['sources text', ['sources']]]) {
+    const [node, rust] = await Promise.all([nodeRunner.run(args), rustRunner.run(args)]);
+    const shared = args.includes('--json') ? { ...rust, out: `${JSON.stringify(JSON.parse(rust.out).filter((source) => !RUST_ONLY.includes(source.id)), null, 2)}\n` } : sharedOnly(rust);
+    record(`${label}: ${args.join(' ')}`, node, shared);
+  }
 
   const queries = ['dialog', 'carousel cards', 'data table with filters', 'toast notification', 'modal', 'loading state', 'aurora background', 'liquid button', 'primitive', 'animated number counter', 'command palette', 'bottom sheet', 'the and of', 'qqqzzz', 'Żółć dialog'];
   const sources = ['', 'shadcn', 'magicui', 'aceternity', 'kokonut', 'beautifului', '21st', 'rareui', 'base-ui', 'radix', 'sonner', 'vaul', 'cmdk', 'number-flow'];
