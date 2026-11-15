@@ -26,7 +26,7 @@ try {
   const native = pack(folder);
   const launcher = pack(root);
   run(npm, ['install', '--offline', '--ignore-scripts', '--no-audit', '--no-fund', path.join(work, native), path.join(work, launcher)]);
-  const cli = path.join(work, 'node_modules', 'clayui', 'bin', 'launcher.mjs');
+  const cli = path.join(work, 'node_modules', '@behavio1', 'clayui', 'bin', 'launcher.mjs');
   assert.equal(run(runtime, [cli, '--version']).trim(), JSON.parse(readFileSync(path.join(root,'package.json'))).version);
   assert.match(run(runtime, [cli, '--help']), /clayui search/);
   run(runtime, [cli, 'init', '--no-sync', '--target', 'agents']);

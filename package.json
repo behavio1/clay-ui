@@ -1,6 +1,6 @@
 {
-  "name": "clayui",
-  "version": "0.1.0",
+  "name": "@behavio1/clayui",
+  "version": "0.1.1",
   "description": "Find proven UI components across the standard UI libraries, compare variants and download their code for your agent to mold into your product.",
   "type": "module",
   "license": "MIT",
@@ -29,11 +29,11 @@
     "clayui": "bin/launcher.mjs"
   },
   "optionalDependencies": {
-    "clayui-darwin-arm64": "0.1.0",
-    "clayui-darwin-x64": "0.1.0",
-    "clayui-linux-x64": "0.1.0",
-    "clayui-linux-arm64": "0.1.0",
-    "clayui-win32-x64": "0.1.0"
+    "clayui-darwin-arm64": "0.1.1",
+    "clayui-darwin-x64": "0.1.1",
+    "clayui-linux-x64": "0.1.1",
+    "clayui-linux-arm64": "0.1.1",
+    "clayui-win32-x64": "0.1.1"
   },
   "files": [
     "bin/launcher.mjs",

@@ -9,7 +9,7 @@ Clay UI finds proven, ready-made UI components across the standard, trusted UI l
 Run this in your project:
 
 ```bash
-npx clayui init
+npx @behavio1/clayui init
 ```
 
 It installs the Clay UI skill for your coding agent and builds the local component index. Then just ask your agent, in any language:
@@ -18,7 +18,7 @@ It installs the Clay UI skill for your coding agent and builds the local compone
 
 Clay UI is a small native binary. `npx` fetches the right one for your machine, so you need Node.js 18.20.8 or newer but no Rust toolchain. Supported systems: macOS arm64/x64, Linux arm64/x64 (musl), and Windows x64.
 
-Use `npx clayui init --global` to enable it for all your projects. Add `--target agents` for Codex, Cursor and other agents that read `.agents/skills`, or `--target claude` for Claude Code only.
+Use `npx @behavio1/clayui init --global` to enable it for all your projects. Add `--target agents` for Codex, Cursor and other agents that read `.agents/skills`, or `--target claude` for Claude Code only.
 
 If you prefer the [skills](https://skills.sh) CLI:
 

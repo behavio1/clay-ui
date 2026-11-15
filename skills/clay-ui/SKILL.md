@@ -7,7 +7,7 @@ description: Find ready-made UI components and component libraries (shadcn/ui, R
 
 Clay UI searches real component libraries and downloads source code as examples. You adapt that code to the user's project. It never installs anything.
 
-Run everything with `npx -y clayui@latest`. Always add `--json` to `search`, `show` and `get`.
+Run everything with `npx -y @behavio1/clayui@latest`. Always add `--json` to `search`, `show` and `get`.
 
 ## Read what the client really wants
 
@@ -42,7 +42,7 @@ If a need has no good component (trust badges and full order summaries came back
 1. **Search.** Run the queries above.
 
    ```bash
-   npx -y clayui@latest search "date range picker booking stays" --available-only --limit 20 --json
+   npx -y @behavio1/clayui@latest search "date range picker booking stays" --available-only --limit 20 --json
    ```
 
    Use `--available-only --limit 20` to exclude `needs-key`, `pro-only` and `no-source-listing` before limiting results. Still check `show` and `get`: upstream availability can change. If the project uses one library, also search with `--source <id>` (`shadcn`, `base-ui`, `radix`, `number-flow`; list ids with `sources`), and widen when the code lacks a required behavior. Explicit stack needs go in `--source`, such as `--source radix` for "use Radix".
@@ -58,7 +58,7 @@ If a need has no good component (trust badges and full order summaries came back
 3. **Check the fit.** Verify required behavior (keyboard, touch, reduced motion, sorting) in `description` and then the code. Do not swap a behavior for a cosmetic synonym.
 
    ```bash
-   npx -y clayui@latest show <id> --project . --json
+   npx -y @behavio1/clayui@latest show <id> --project . --json
    ```
 
    - `project.missingDependencies` are packages to consider. `cn` is a helper, not a package; use the project's own.
@@ -69,7 +69,7 @@ If a need has no good component (trust badges and full order summaries came back
 4. **Download.**
 
    ```bash
-   npx -y clayui@latest get <id> --out .clayui-examples --json
+   npx -y @behavio1/clayui@latest get <id> --out .clayui-examples --json
    ```
 
    Files land in `.clayui-examples/<source>/<name>/`. Check `sourceWarnings`, `skipped`, `cacheWarning` and `cacheAgeDays`. A cache warning means upstream failed and the downloaded copy is between 7 and 30 days old. Tell the user its age, inspect it, and retry when upstream recovers; do not claim it is current. Older copies are never served. Query embeddings are retained for 30 days (up to 2000 entries); search results are never cached. If no source files can be downloaded, including a GitHub 403 leaving only usage documentation, `get` exits 3 and creates no example folder. Retry with the token below; use `--force` only when a folder already exists.
@@ -104,7 +104,7 @@ Never downgrade functional fit for a missing demo or maintenance note. A missing
 | `get` exits 3 (`unavailable`) | Tell the user, offer the next option. Skip that `id`. |
 | Exit 2 `Folder already exists ... Use --force` | Add `--force` |
 | Exit 2 `Unknown source` / `Invalid id` | Use an exact `id` from search |
-| `sync` exits 1, or `sources --json` shows `error` | `GITHUB_TOKEN="$(gh auth token)" npx -y clayui@latest sync`, token in the command environment only. If it still fails, report incomplete coverage. |
+| `sync` exits 1, or `sources --json` shows `error` | `GITHUB_TOKEN="$(gh auth token)" npx -y @behavio1/clayui@latest sync`, token in the command environment only. If it still fails, report incomplete coverage. |
 | No results | Rephrase in English, shorten, try a synonym |
 
 Errors go to stderr as plain text even with `--json`; failed `show`/`get` leave stdout empty. Exit 1 means an operation failed, 2 means invalid input, and 3 means no downloadable source. Always check the exit code before parsing stdout. `sync --json` returns `{ok, failed, embeddingError}` and exits 1 if any requested source or embedding preparation failed. It keeps the last good source data. Without a Gemini key, keyword mode is normal and does not make sync fail.
