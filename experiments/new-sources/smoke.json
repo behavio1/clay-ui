@@ -1,0 +1,598 @@
+[
+  {
+    "id": "evilcharts/recharts-bar-chart",
+    "query": "bar chart",
+    "searchExit": 0,
+    "searchIds": [
+      "evilcharts/recharts-bar-chart",
+      "evilcharts/monospace-bar-chart",
+      "evilcharts/grid-bar-chart",
+      "evilcharts/echarts-bar-chart",
+      "evilcharts/isometric-bar-chart"
+    ],
+    "showExit": 0,
+    "sourceUrl": "https://evilcharts.com/r/recharts-bar-chart.json",
+    "license": "MIT",
+    "licenseUrl": "https://raw.githubusercontent.com/legions-developer/evilcharts/HEAD/LICENSE",
+    "previewUrl": null,
+    "previewStatus": "none",
+    "registryDependencies": [
+      "@evilcharts/recharts-chart",
+      "@evilcharts/recharts-tooltip",
+      "@evilcharts/recharts-legend",
+      "@evilcharts/recharts-brush",
+      "@evilcharts/recharts-background"
+    ],
+    "gaps": [
+      "no-preview",
+      "local-imports-missing"
+    ],
+    "missingLocalImports": [
+      {
+        "file": "components/evilcharts/charts/recharts-bar-chart.tsx",
+        "import": "@/registry/ui/recharts-chart"
+      },
+      {
+        "file": "components/evilcharts/charts/recharts-bar-chart.tsx",
+        "import": "@/registry/ui/recharts-tooltip"
+      },
+      {
+        "file": "components/evilcharts/charts/recharts-bar-chart.tsx",
+        "import": "@/registry/ui/recharts-legend"
+      },
+      {
+        "file": "components/evilcharts/charts/recharts-bar-chart.tsx",
+        "import": "@/registry/ui/recharts-brush"
+      },
+      {
+        "file": "components/evilcharts/charts/recharts-bar-chart.tsx",
+        "import": "@/registry/ui/recharts-background"
+      }
+    ],
+    "sourceFiles": 1,
+    "registryItems": [],
+    "getExit": 0,
+    "downloadedFiles": [
+      "components/evilcharts/charts/recharts-bar-chart.tsx"
+    ],
+    "destination": "/private/tmp/clayui-source-smoke-lecvadw_/evilcharts/recharts-bar-chart",
+    "seconds": 0.868
+  },
+  {
+    "id": "reui/data-grid",
+    "query": "data grid",
+    "searchExit": 0,
+    "searchIds": [
+      "reui/data-grid",
+      "reui/data-grid-i18n",
+      "reui/data-grid-pagination",
+      "reui/data-grid-table",
+      "reui/data-grid-cell-selection"
+    ],
+    "showExit": 0,
+    "sourceUrl": "https://reui.io/r/styles/base-nova/data-grid.json",
+    "license": "MIT",
+    "licenseUrl": "https://raw.githubusercontent.com/keenthemes/reui/HEAD/LICENSE.md",
+    "previewUrl": "https://reui.io/docs/data-grid",
+    "previewStatus": "ok",
+    "registryDependencies": [
+      "@reui/badge",
+      "button",
+      "checkbox",
+      "@reui/data-grid-i18n",
+      "@reui/data-grid-table",
+      "dropdown-menu",
+      "input",
+      "popover",
+      "select",
+      "separator",
+      "skeleton",
+      "spinner"
+    ],
+    "gaps": [
+      "local-imports-missing"
+    ],
+    "missingLocalImports": [
+      {
+        "file": "components/reui/data-grid/data-grid-cell-selection.tsx",
+        "import": "@/components/ui/button"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-column-filter.tsx",
+        "import": "@/components/reui/badge"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-column-filter.tsx",
+        "import": "@/components/ui/button"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-column-filter.tsx",
+        "import": "@/components/ui/input"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-column-filter.tsx",
+        "import": "@/components/ui/popover"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-column-filter.tsx",
+        "import": "@/components/ui/separator"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-column-filter.tsx",
+        "import": "@/app/(create)/components/icon-placeholder"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-column-header.tsx",
+        "import": "@/components/ui/button"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-column-header.tsx",
+        "import": "@/components/ui/dropdown-menu"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-column-header.tsx",
+        "import": "@/app/(create)/components/icon-placeholder"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-column-visibility.tsx",
+        "import": "@/components/ui/dropdown-menu"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-pagination.tsx",
+        "import": "@/components/ui/button"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-pagination.tsx",
+        "import": "@/components/ui/select"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-pagination.tsx",
+        "import": "@/components/ui/skeleton"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-pagination.tsx",
+        "import": "@/app/(create)/components/icon-placeholder"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-table-dnd-rows.tsx",
+        "import": "@/components/ui/button"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-table-dnd-rows.tsx",
+        "import": "@/app/(create)/components/icon-placeholder"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-table-dnd.tsx",
+        "import": "@/components/ui/button"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-table-dnd.tsx",
+        "import": "@/app/(create)/components/icon-placeholder"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-table-virtual.tsx",
+        "import": "@/components/ui/spinner"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-table.tsx",
+        "import": "@/components/ui/button"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-table.tsx",
+        "import": "@/components/ui/checkbox"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-table.tsx",
+        "import": "@/components/ui/spinner"
+      },
+      {
+        "file": "components/reui/data-grid/data-grid-table.tsx",
+        "import": "@/app/(create)/components/icon-placeholder"
+      }
+    ],
+    "sourceFiles": 12,
+    "registryItems": [],
+    "getExit": 0,
+    "downloadedFiles": [
+      "components/reui/data-grid/data-grid-cell-selection.tsx",
+      "components/reui/data-grid/data-grid-column-filter.tsx",
+      "components/reui/data-grid/data-grid-column-header.tsx",
+      "components/reui/data-grid/data-grid-column-visibility.tsx",
+      "components/reui/data-grid/data-grid-i18n.tsx",
+      "components/reui/data-grid/data-grid-pagination.tsx",
+      "components/reui/data-grid/data-grid-scroll-area.tsx",
+      "components/reui/data-grid/data-grid-table-dnd-rows.tsx",
+      "components/reui/data-grid/data-grid-table-dnd.tsx",
+      "components/reui/data-grid/data-grid-table-virtual.tsx",
+      "components/reui/data-grid/data-grid-table.tsx",
+      "components/reui/data-grid/data-grid.tsx"
+    ],
+    "destination": "/private/tmp/clayui-source-smoke-lecvadw_/reui/data-grid",
+    "seconds": 2.004
+  },
+  {
+    "id": "kibo/dropzone",
+    "query": "dropzone",
+    "searchExit": 0,
+    "searchIds": [
+      "kibo/dropzone"
+    ],
+    "showExit": 0,
+    "sourceUrl": "https://www.kibo-ui.com/r/dropzone.json",
+    "license": "MIT",
+    "licenseUrl": "https://raw.githubusercontent.com/shadcnblocks/kibo/HEAD/license.md",
+    "previewUrl": "https://www.kibo-ui.com/components/dropzone",
+    "previewStatus": "ok",
+    "registryDependencies": [
+      "button"
+    ],
+    "gaps": [
+      "local-imports-missing"
+    ],
+    "missingLocalImports": [
+      {
+        "file": "components/kibo-ui/dropzone/index.tsx",
+        "import": "@/components/ui/button"
+      },
+      {
+        "file": "components/kibo-ui/dropzone/index.tsx",
+        "import": "@/lib/utils"
+      }
+    ],
+    "sourceFiles": 1,
+    "registryItems": [],
+    "getExit": 0,
+    "downloadedFiles": [
+      "components/kibo-ui/dropzone/index.tsx"
+    ],
+    "destination": "/private/tmp/clayui-source-smoke-lecvadw_/kibo/dropzone",
+    "seconds": 1.933
+  },
+  {
+    "id": "blocks-so/file-upload-03",
+    "query": "file upload",
+    "searchExit": 0,
+    "searchIds": [
+      "blocks-so/file-upload-02",
+      "blocks-so/file-upload-03",
+      "blocks-so/file-upload-01",
+      "blocks-so/file-upload-04",
+      "blocks-so/file-upload-05"
+    ],
+    "showExit": 0,
+    "sourceUrl": "https://blocks.so/r/file-upload-03.json",
+    "license": "MIT",
+    "licenseUrl": "https://raw.githubusercontent.com/ephraimduncan/blocks/HEAD/LICENSE.md",
+    "previewUrl": null,
+    "previewStatus": "none",
+    "registryDependencies": [
+      "button",
+      "card",
+      "input",
+      "label",
+      "select",
+      "separator"
+    ],
+    "gaps": [
+      "no-preview",
+      "local-imports-missing"
+    ],
+    "missingLocalImports": [
+      {
+        "file": "components/file-upload-03.tsx",
+        "import": "@/components/ui/button"
+      },
+      {
+        "file": "components/file-upload-03.tsx",
+        "import": "@/components/ui/card"
+      },
+      {
+        "file": "components/file-upload-03.tsx",
+        "import": "@/components/ui/input"
+      },
+      {
+        "file": "components/file-upload-03.tsx",
+        "import": "@/components/ui/label"
+      },
+      {
+        "file": "components/file-upload-03.tsx",
+        "import": "@/components/ui/select"
+      },
+      {
+        "file": "components/file-upload-03.tsx",
+        "import": "@/components/ui/separator"
+      },
+      {
+        "file": "components/file-upload-03.tsx",
+        "import": "@/lib/utils"
+      }
+    ],
+    "sourceFiles": 1,
+    "registryItems": [],
+    "getExit": 0,
+    "downloadedFiles": [
+      "components/file-upload-03.tsx"
+    ],
+    "destination": "/private/tmp/clayui-source-smoke-lecvadw_/blocks-so/file-upload-03",
+    "seconds": 1.322
+  },
+  {
+    "id": "blocks-so/sidebar-01",
+    "query": "sidebar",
+    "searchExit": 0,
+    "searchIds": [
+      "blocks-so/sidebar-06",
+      "blocks-so/sidebar-01",
+      "blocks-so/sidebar-02",
+      "blocks-so/sidebar-03",
+      "blocks-so/sidebar-05"
+    ],
+    "showExit": 0,
+    "sourceUrl": "https://blocks.so/r/sidebar-01.json",
+    "license": "MIT",
+    "licenseUrl": "https://raw.githubusercontent.com/ephraimduncan/blocks/HEAD/LICENSE.md",
+    "previewUrl": null,
+    "previewStatus": "none",
+    "registryDependencies": [
+      "avatar",
+      "button",
+      "collapsible",
+      "command",
+      "dropdown-menu",
+      "sidebar",
+      "tooltip"
+    ],
+    "gaps": [
+      "no-preview",
+      "local-imports-missing"
+    ],
+    "missingLocalImports": [
+      {
+        "file": "components/sidebar-01/nav-footer.tsx",
+        "import": "@/components/ui/avatar"
+      },
+      {
+        "file": "components/sidebar-01/nav-footer.tsx",
+        "import": "@/components/ui/button"
+      },
+      {
+        "file": "components/sidebar-01/nav-footer.tsx",
+        "import": "@/components/ui/dropdown-menu"
+      },
+      {
+        "file": "components/sidebar-01/nav-footer.tsx",
+        "import": "@/components/ui/sidebar"
+      },
+      {
+        "file": "components/sidebar-01/nav-footer.tsx",
+        "import": "@/components/ui/tooltip"
+      },
+      {
+        "file": "components/sidebar-01/nav-main.tsx",
+        "import": "@/components/ui/sidebar"
+      },
+      {
+        "file": "components/sidebar-01/nav-collapsible.tsx",
+        "import": "@/components/ui/collapsible"
+      },
+      {
+        "file": "components/sidebar-01/nav-collapsible.tsx",
+        "import": "@/components/ui/sidebar"
+      },
+      {
+        "file": "components/sidebar-01/app-sidebar.tsx",
+        "import": "@/components/ui/sidebar"
+      },
+      {
+        "file": "components/sidebar-01/nav-header.tsx",
+        "import": "@/components/ui/command"
+      },
+      {
+        "file": "components/sidebar-01/nav-header.tsx",
+        "import": "@/components/ui/sidebar"
+      },
+      {
+        "file": "components/sidebar-01/nav-header.tsx",
+        "import": "@/lib/utils"
+      },
+      {
+        "file": "components/sidebar-01/index.tsx",
+        "import": "@/components/ui/sidebar"
+      }
+    ],
+    "sourceFiles": 7,
+    "registryItems": [],
+    "getExit": 0,
+    "downloadedFiles": [
+      "components/sidebar-01/nav-footer.tsx",
+      "components/sidebar-01/types.ts",
+      "components/sidebar-01/nav-main.tsx",
+      "components/sidebar-01/nav-collapsible.tsx",
+      "components/sidebar-01/app-sidebar.tsx",
+      "components/sidebar-01/nav-header.tsx",
+      "components/sidebar-01/index.tsx"
+    ],
+    "destination": "/private/tmp/clayui-source-smoke-lecvadw_/blocks-so/sidebar-01",
+    "seconds": 1.078
+  },
+  {
+    "id": "asciicn/miami",
+    "query": "miami",
+    "searchExit": 0,
+    "searchIds": [
+      "asciicn/miami"
+    ],
+    "showExit": 0,
+    "sourceUrl": "https://asciicn.dev/r/miami.json",
+    "license": "MIT",
+    "licenseUrl": "https://raw.githubusercontent.com/opencoredev/asciicn/HEAD/LICENSE",
+    "previewUrl": null,
+    "previewStatus": "none",
+    "registryDependencies": [
+      "https://asciicn.dev/r/ascii-core.json",
+      "https://asciicn.dev/r/ascii-shader.json"
+    ],
+    "gaps": [
+      "no-preview",
+      "local-imports-missing"
+    ],
+    "missingLocalImports": [
+      {
+        "file": "lib/ascii/shader.tsx",
+        "import": "@/lib/utils"
+      },
+      {
+        "file": "lib/ascii/grid.tsx",
+        "import": "@/lib/utils"
+      },
+      {
+        "file": "lib/ascii/crt.tsx",
+        "import": "@/lib/utils"
+      },
+      {
+        "file": "lib/ascii/pre.tsx",
+        "import": "@/lib/utils"
+      }
+    ],
+    "sourceFiles": 30,
+    "registryItems": [
+      {
+        "name": "ascii-shader",
+        "sourceUrl": "https://asciicn.dev/r/ascii-shader.json",
+        "registryDependencies": [
+          "https://asciicn.dev/r/ascii-core.json"
+        ]
+      },
+      {
+        "name": "ascii-core",
+        "sourceUrl": "https://asciicn.dev/r/ascii-core.json",
+        "registryDependencies": [
+          "utils",
+          "https://asciicn.dev/r/ascii-tokens.json"
+        ]
+      },
+      {
+        "name": "ascii-tokens",
+        "sourceUrl": "https://asciicn.dev/r/ascii-tokens.json",
+        "css": {
+          "@layer base": {
+            ":root": {
+              "--ascii-ink": "var(--primary)",
+              "--ascii-paper": "var(--background)",
+              "--ascii-cell": "12px",
+              "--ascii-font": "ui-monospace, \"Cascadia Mono\", \"SF Mono\", \"JetBrains Mono\", Menlo, Consolas, \"DejaVu Sans Mono\", \"Noto Sans Mono\", monospace",
+              "--ascii-glow": "0.35",
+              "--ascii-bloom": "var(--ascii-glow)",
+              "--ascii-color-blue": "oklch(0.55 0.17 250)",
+              "--ascii-color-purple": "oklch(0.53 0.2 302)",
+              "--ascii-color-green": "oklch(0.56 0.15 150)",
+              "--ascii-color-pink": "oklch(0.57 0.2 355)",
+              "--ascii-color-orange": "oklch(0.62 0.16 52)",
+              "--ascii-color-red": "oklch(0.55 0.2 27)",
+              "--ascii-color-grey": "oklch(0.56 0.01 250)"
+            },
+            ".dark": {
+              "--ascii-ink": "var(--primary)",
+              "--ascii-paper": "var(--background)",
+              "--ascii-glow": "0.9",
+              "--ascii-color-blue": "oklch(0.72 0.14 240)",
+              "--ascii-color-purple": "oklch(0.72 0.17 304)",
+              "--ascii-color-green": "oklch(0.8 0.17 150)",
+              "--ascii-color-pink": "oklch(0.74 0.17 354)",
+              "--ascii-color-orange": "oklch(0.79 0.15 62)",
+              "--ascii-color-red": "oklch(0.69 0.19 25)",
+              "--ascii-color-grey": "oklch(0.66 0.01 250)"
+            }
+          }
+        },
+        "cssVars": {
+          "theme": {
+            "color-ascii-ink": "var(--ascii-ink)",
+            "color-ascii-paper": "var(--ascii-paper)",
+            "color-ascii-blue": "var(--ascii-color-blue)",
+            "color-ascii-purple": "var(--ascii-color-purple)",
+            "color-ascii-green": "var(--ascii-color-green)",
+            "color-ascii-pink": "var(--ascii-color-pink)",
+            "color-ascii-orange": "var(--ascii-color-orange)",
+            "color-ascii-red": "var(--ascii-color-red)",
+            "color-ascii-grey": "var(--ascii-color-grey)"
+          }
+        }
+      }
+    ],
+    "getExit": 0,
+    "downloadedFiles": [
+      "components/asciicn/miami.tsx",
+      "lib/ascii/shader.tsx",
+      "lib/ascii/gpu.ts",
+      "lib/ascii/glsl.ts",
+      "lib/ascii/seed.ts",
+      "lib/ascii/index.ts",
+      "lib/ascii/charsets.ts",
+      "lib/ascii/palettes.ts",
+      "lib/ascii/frame.ts",
+      "lib/ascii/measure.ts",
+      "lib/ascii/glyphs.ts",
+      "lib/ascii/atlas.ts",
+      "lib/ascii/paint.ts",
+      "lib/ascii/grid.tsx",
+      "lib/ascii/crt.tsx",
+      "lib/ascii/pre.tsx",
+      "lib/ascii/sample.ts",
+      "lib/ascii/pointer.ts",
+      "lib/ascii/matrices.ts",
+      "lib/ascii/blue-noise.ts",
+      "lib/ascii/tokens.ts",
+      "lib/ascii/color.ts",
+      "lib/ascii/motion.ts",
+      "lib/ascii/style.ts",
+      "lib/ascii/pattern.tsx",
+      "lib/ascii/fill.tsx",
+      "lib/ascii/diffuse.ts",
+      "lib/ascii/look.ts",
+      "lib/ascii/scene.ts",
+      "lib/ascii/audio.ts"
+    ],
+    "destination": "/private/tmp/clayui-source-smoke-lecvadw_/asciicn/miami",
+    "seconds": 1.42
+  },
+  {
+    "id": "uiarc/button",
+    "query": "button",
+    "searchExit": 0,
+    "searchIds": [
+      "uiarc/action-button",
+      "uiarc/button",
+      "uiarc/copy-button",
+      "uiarc/floating-button-group",
+      "uiarc/split-button"
+    ],
+    "showExit": 0,
+    "sourceUrl": "https://uiarc.dev/r/button.json",
+    "license": "MIT",
+    "licenseUrl": "https://raw.githubusercontent.com/kuratlielia/arc-library/HEAD/LICENSE",
+    "previewUrl": "https://uiarc.dev/components/button",
+    "previewStatus": "ok",
+    "registryDependencies": [
+      "https://uiarc.dev/r/arc-motion-tokens.json"
+    ],
+    "gaps": [
+      "local-imports-missing"
+    ],
+    "missingLocalImports": [
+      {
+        "file": "@components/arc/button/button.tsx",
+        "import": "../lib/motion-tokens"
+      }
+    ],
+    "sourceFiles": 2,
+    "registryItems": [],
+    "getExit": 0,
+    "downloadedFiles": [
+      "@components/arc/button/button.tsx",
+      "@components/arc/button/button.module.css"
+    ],
+    "destination": "/private/tmp/clayui-source-smoke-lecvadw_/uiarc/button",
+    "seconds": 5.983
+  }
+]

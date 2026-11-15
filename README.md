@@ -31,7 +31,7 @@ npx skills add behavio1/clay-ui
 ## How it works
 
 1. **You describe it.** Tell your agent what you need.
-2. **Clay UI searches.** It looks through shadcn/ui, Radix, Base UI, Sonner, Vaul, cmdk, NumberFlow, Beautiful UI, RareUI, Magic UI, Aceternity UI, 21st.dev and Kokonut UI.
+2. **Clay UI searches.** It looks through shadcn/ui, Radix, Base UI, Sonner, Vaul, cmdk, NumberFlow, Beautiful UI, RareUI, Magic UI, Aceternity UI, 21st.dev and Kokonut UI, plus 23 public registries including Evil Charts, Origin UI, Kibo UI, ReUI, blocks.so, Motion Primitives, SmoothUI and Fancy Components. See the [source list and scope](docs/sources.md).
 3. **You pick a variant.** Your agent shows the best matches with preview links.
 4. **Your agent shapes it.** The source lands in a local folder as an example. Your agent rewrites it to fit your stack, tokens and style.
 

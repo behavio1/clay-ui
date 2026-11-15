@@ -872,7 +872,10 @@ fn init_without_no_sync_preserves_the_index_and_reports_failing_sources() {
             .as_object()
             .unwrap()
             .len(),
-        12
+        clayui_lib::sources::SOURCES
+            .iter()
+            .filter(|s| !s.live)
+            .count()
     );
 }
 
@@ -2120,4 +2123,247 @@ fn skill_and_init_cover_acceptance_guidance() {
     );
     assert_eq!(result.code, 0);
     assert!(result.out.contains("CLAYUI_GEMINI_ENV_FILE"));
+}
+
+#[test]
+fn new_registry_specs_sync_show_and_get_without_installing() {
+    let specs: Value =
+        serde_json::from_str(include_str!("../experiments/new-sources/sources.json")).unwrap();
+    for row in specs.as_array().unwrap() {
+        let (id, index, item) = (
+            row[0].as_str().unwrap(),
+            row[2].as_str().unwrap(),
+            row[3].as_str().unwrap(),
+        );
+        let cache = temp();
+        let server = mock(|call| {
+            if call.path.ends_with("/registry.json") {
+                return ok(json!({"items":[
+                    {"name":"sample","type":"registry:ui","title":"Sample chart", "meta":{"isPro":false,"tier":"free"}},
+                    {"name":"paid","type":"registry:ui","meta":{"isPro":true,"tier":"pro"}},
+                    {"name":"helper","type":"registry:hook"},
+                    {"name":"skill","type":"registry:item"},
+                    {"name":"sample-demo","type":"registry:component"},
+                    {"name":"../escape","type":"registry:ui"}
+                ]}).to_string());
+            }
+            ok(json!({"files":[{"path":"chart.tsx","content":"export const Chart = () => null;"}],"registryDependencies":["https://asciicn.dev/r/ascii-core.json"],"cssVars":{"theme":{"color":"red"}},"meta":{"isPro":false}}).to_string())
+        });
+        let synced = cli(&["sync", "--source", id, "--json"], &server, &cache);
+        assert_eq!(synced.code, 0, "{id}: {}", synced.err);
+        let catalog = read_json(cache.join("index.json"));
+        let items = catalog["sources"][id]["items"].as_array().unwrap();
+        assert_eq!(items.len(), 1, "{id}: {items:?}");
+        assert_eq!(items[0]["license"], row[4]);
+        let component = format!("{id}/sample");
+        let shown = cli(&["show", &component, "--json"], &server, &cache);
+        assert_eq!(shown.code, 0, "{id}: {}", shown.err);
+        assert_eq!(shown.json()["cssVars"]["theme"]["color"], "red");
+        assert_eq!(
+            shown.json()["registryDependencies"],
+            json!(["https://asciicn.dev/r/ascii-core.json"])
+        );
+        let out = temp();
+        let got = cli(
+            &["get", &component, "--out", out.to_str().unwrap(), "--json"],
+            &server,
+            &cache,
+        );
+        assert_eq!(got.code, 0, "{id}: {}", got.err);
+        let manifest = read_json(out.join(id).join("sample/clayui.json"));
+        assert_eq!(manifest["cssVars"]["theme"]["color"], "red");
+        assert!(manifest["licenseUrl"]
+            .as_str()
+            .unwrap()
+            .starts_with("https://raw.githubusercontent.com/"));
+        assert!(out.join(id).join("sample/chart.tsx").is_file());
+        let paths: Vec<_> = server
+            .calls
+            .lock()
+            .unwrap()
+            .iter()
+            .map(|c| c.path.clone())
+            .collect();
+        assert!(
+            paths.contains(&format!("/{}", index.strip_prefix("https://").unwrap())),
+            "{id}: {paths:?}"
+        );
+        assert!(
+            paths.contains(&format!(
+                "/{}",
+                item.replace("{name}", "sample")
+                    .strip_prefix("https://")
+                    .unwrap()
+            )),
+            "{id}: {paths:?}"
+        );
+    }
+}
+
+#[test]
+fn reui_skips_denied_modules_and_excludes_premium_blocks() {
+    let cache = temp();
+    let server = mock(|call| {
+        if call.path.ends_with("registry.json") {
+            return ok(json!({"items":[
+                {"name":"data-grid","type":"registry:ui"},
+                {"name":"locked","type":"registry:ui"},
+                {"name":"app-shell-35","type":"registry:block"}
+            ]})
+            .to_string());
+        }
+        if call.path.ends_with("locked.json") {
+            return Reply::Respond(401, "license required".into());
+        }
+        ok(json!({"files":[{"path":"grid.tsx","content":"export const grid = 1;"}]}).to_string())
+    });
+    assert_eq!(
+        cli(&["sync", "--source", "reui", "--json"], &server, &cache).code,
+        0
+    );
+    let index = read_json(cache.join("index.json"));
+    assert_eq!(
+        index["sources"]["reui"]["items"].as_array().unwrap().len(),
+        1
+    );
+    assert!(!server
+        .calls
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|c| c.path.ends_with("app-shell-35.json")));
+}
+
+#[test]
+fn shadcn_space_requires_repository_membership_and_explicit_free_flag() {
+    let cache = temp();
+    let server = mock(|call| {
+        let names = if call.path.contains("raw.githubusercontent.com") {
+            vec![json!({"name":"hero-01"}), json!({"name":"hero-02"})]
+        } else {
+            vec![
+                json!({"name":"hero-01","type":"registry:block","meta":{"isPro":false}}),
+                json!({"name":"hero-02","type":"registry:block","meta":{"isPro":true}}),
+                json!({"name":"hero-03","type":"registry:block","meta":{"isPro":false}}),
+                json!({"name":"unknown","type":"registry:block"}),
+            ]
+        };
+        ok(json!({"items":names}).to_string())
+    });
+    let result = cli(
+        &["sync", "--source", "shadcn-space", "--json"],
+        &server,
+        &cache,
+    );
+    assert_eq!(result.code, 0, "{}", result.err);
+    let index = read_json(cache.join("index.json"));
+    let items = index["sources"]["shadcn-space"]["items"]
+        .as_array()
+        .unwrap();
+    assert_eq!(items.len(), 1);
+    assert_eq!(items[0]["name"], "hero-01");
+}
+
+#[test]
+fn new_registry_rechecks_pro_metadata_before_delivering_code() {
+    let cache = temp();
+    seed_index(
+        &cache,
+        "shadcn-space",
+        vec![item_with(
+            "shadcn-space",
+            "hero-01",
+            json!({"licenseUrl":"https://example.com/LICENSE"}),
+        )],
+    );
+    let server = registry_mock(
+        json!({"meta":{"isPro":true},"files":[{"path":"paid.tsx","content":"paid"}]}),
+    );
+    let out = temp();
+    let got = cli(
+        &[
+            "get",
+            "shadcn-space/hero-01",
+            "--out",
+            out.to_str().unwrap(),
+            "--json",
+        ],
+        &server,
+        &cache,
+    );
+    assert_eq!(got.code, 3, "{}", got.err);
+    assert!(entries(&out).is_empty());
+}
+
+#[test]
+fn asciicn_downloads_own_engine_and_css_without_following_other_hosts() {
+    let cache = temp();
+    seed_index(
+        &cache,
+        "asciicn",
+        vec![item_with(
+            "asciicn",
+            "miami",
+            json!({"licenseUrl":"https://example.com/LICENSE"}),
+        )],
+    );
+    let server = mock(|call| {
+        let body = if call.path.ends_with("miami.json") {
+            json!({"files":[{"path":"miami.tsx","content":"import { engine } from './core';"}],"dependencies":[],"registryDependencies":["https://asciicn.dev/r/core.json","https://other.invalid/steal.json"]})
+        } else if call.path.ends_with("core.json") {
+            json!({"files":[{"path":"core.ts","content":"export const engine = 1;"}],"dependencies":["engine-package"],"registryDependencies":["https://asciicn.dev/r/core.json","https://asciicn.dev/r/tokens.json"]})
+        } else if call.path.ends_with("tokens.json") {
+            json!({"cssVars":{"theme":{"accent":"red"}}})
+        } else {
+            return Reply::Respond(404, "unexpected".into());
+        };
+        ok(body.to_string())
+    });
+    let out = temp();
+    let got = cli(
+        &[
+            "get",
+            "asciicn/miami",
+            "--out",
+            out.to_str().unwrap(),
+            "--json",
+        ],
+        &server,
+        &cache,
+    );
+    assert_eq!(got.code, 0, "{}", got.err);
+    let manifest = got.json();
+    assert_eq!(manifest["files"], json!(["miami.tsx", "core.ts"]));
+    assert_eq!(manifest["dependencies"], json!(["engine-package"]));
+    let configs = manifest["registryItems"].as_array().unwrap();
+    assert!(configs
+        .iter()
+        .any(|i| i["name"] == "tokens" && i["cssVars"]["theme"]["accent"] == "red"));
+    let calls = server.calls.lock().unwrap();
+    assert_eq!(
+        calls
+            .iter()
+            .filter(|c| c.path.ends_with("core.json"))
+            .count(),
+        1
+    );
+    assert!(!calls.iter().any(|c| c.path.contains("other.invalid")));
+}
+
+#[test]
+fn origin_numeric_compositions_use_upstream_tags_and_keep_their_ids() {
+    let cache = temp();
+    let server = registry_mock(
+        json!({"items":[{"name":"comp-371","type":"registry:component","meta":{"tags":["dropdown","checkbox"]}}]}),
+    );
+    assert_eq!(
+        cli(&["sync", "--source", "origin", "--json"], &server, &cache).code,
+        0
+    );
+    let index = read_json(cache.join("index.json"));
+    let entry = &index["sources"]["origin"]["items"][0];
+    assert_eq!(entry["id"], "origin/comp-371");
+    assert_eq!(entry["keywords"], json!(["dropdown", "checkbox"]));
+    assert_eq!(entry["title"], "Dropdown, Checkbox (comp-371)");
+    assert_eq!(entry["example"], true);
 }

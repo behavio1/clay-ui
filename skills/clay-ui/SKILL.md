@@ -5,7 +5,7 @@ description: Find ready-made UI components and component libraries (shadcn/ui, R
 
 # Clay UI
 
-Clay UI searches real component libraries and downloads source code as examples. You adapt that code to the user's project. It never installs anything.
+Clay UI searches real component libraries and downloads source code as examples. You adapt that code to the user's project. It never installs anything. Public registries also include Evil Charts, Origin UI, Kibo UI, ReUI (public UI modules), blocks.so, Motion Primitives, SmoothUI, Fancy Components, BeUI, UIArc, devl.dev, Cult UI, 8bitcn, Shadcn Space (verified free subset), UI Layouts, Spectrum UI, Ruixen UI, Watermelon UI, Avara UI, HextaUI (UI modules), Vengeance UI, Componentry and asciicn. List current source IDs with `clayui sources`. Registry dependencies, including styles and engines, remain requirements to inspect and adapt.
 
 Run everything with `npx -y @behavio1/clayui@latest`. Always add `--json` to `search`, `show` and `get`.
 

@@ -1,0 +1,252 @@
+{
+  "cache": "/private/tmp/clayui-new-sources-48c3rb0_",
+  "sources": [
+    {
+      "id": "shadcn",
+      "seconds": 1.237,
+      "exit": 0,
+      "items": 65,
+      "error": null
+    },
+    {
+      "id": "magicui",
+      "seconds": 0.148,
+      "exit": 0,
+      "items": 79,
+      "error": null
+    },
+    {
+      "id": "aceternity",
+      "seconds": 2.994,
+      "exit": 0,
+      "items": 320,
+      "error": null
+    },
+    {
+      "id": "kokonut",
+      "seconds": 0.539,
+      "exit": 0,
+      "items": 116,
+      "error": null
+    },
+    {
+      "id": "beautifului",
+      "seconds": 0.46,
+      "exit": 0,
+      "items": 27,
+      "error": null
+    },
+    {
+      "id": "rareui",
+      "seconds": 0.836,
+      "exit": 1,
+      "items": 0,
+      "error": "rareui.in: HTTP 404"
+    },
+    {
+      "id": "base-ui",
+      "seconds": 0.323,
+      "exit": 0,
+      "items": 37,
+      "error": null
+    },
+    {
+      "id": "radix",
+      "seconds": 1.002,
+      "exit": 0,
+      "items": 30,
+      "error": null
+    },
+    {
+      "id": "sonner",
+      "seconds": 0.081,
+      "exit": 0,
+      "items": 1,
+      "error": null
+    },
+    {
+      "id": "vaul",
+      "seconds": 0.081,
+      "exit": 0,
+      "items": 1,
+      "error": null
+    },
+    {
+      "id": "cmdk",
+      "seconds": 0.09,
+      "exit": 0,
+      "items": 1,
+      "error": null
+    },
+    {
+      "id": "number-flow",
+      "seconds": 0.277,
+      "exit": 0,
+      "items": 1,
+      "error": null
+    },
+    {
+      "id": "evilcharts",
+      "seconds": 0.274,
+      "exit": 0,
+      "items": 57,
+      "error": null
+    },
+    {
+      "id": "origin",
+      "seconds": 0.494,
+      "exit": 0,
+      "items": 640,
+      "error": null,
+      "resynced": true
+    },
+    {
+      "id": "kibo",
+      "seconds": 0.513,
+      "exit": 0,
+      "items": 40,
+      "error": null
+    },
+    {
+      "id": "reui",
+      "seconds": 5.495,
+      "exit": 0,
+      "items": 82,
+      "error": null
+    },
+    {
+      "id": "blocks-so",
+      "seconds": 0.195,
+      "exit": 0,
+      "items": 81,
+      "error": null
+    },
+    {
+      "id": "motion-primitives",
+      "seconds": 0.133,
+      "exit": 0,
+      "items": 33,
+      "error": null
+    },
+    {
+      "id": "smoothui",
+      "seconds": 0.533,
+      "exit": 0,
+      "items": 264,
+      "error": null,
+      "resynced": true
+    },
+    {
+      "id": "fancy",
+      "seconds": 0.589,
+      "exit": 0,
+      "items": 45,
+      "error": null
+    },
+    {
+      "id": "beui",
+      "seconds": 0.231,
+      "exit": 0,
+      "items": 158,
+      "error": null
+    },
+    {
+      "id": "uiarc",
+      "seconds": 0.201,
+      "exit": 0,
+      "items": 143,
+      "error": null
+    },
+    {
+      "id": "devl",
+      "seconds": 1.045,
+      "exit": 0,
+      "items": 260,
+      "error": null
+    },
+    {
+      "id": "cult",
+      "seconds": 0.257,
+      "exit": 0,
+      "items": 154,
+      "error": null
+    },
+    {
+      "id": "8bitcn",
+      "seconds": 0.54,
+      "exit": 0,
+      "items": 118,
+      "error": null
+    },
+    {
+      "id": "shadcn-space",
+      "seconds": 0.572,
+      "exit": 0,
+      "items": 562,
+      "error": null
+    },
+    {
+      "id": "ui-layouts",
+      "seconds": 0.586,
+      "exit": 0,
+      "items": 327,
+      "error": null
+    },
+    {
+      "id": "spectrum",
+      "seconds": 0.442,
+      "exit": 0,
+      "items": 261,
+      "error": null
+    },
+    {
+      "id": "ruixen",
+      "seconds": 0.269,
+      "exit": 0,
+      "items": 214,
+      "error": null
+    },
+    {
+      "id": "watermelon",
+      "seconds": 0.354,
+      "exit": 0,
+      "items": 1170,
+      "error": null
+    },
+    {
+      "id": "avara",
+      "seconds": 1.25,
+      "exit": 0,
+      "items": 206,
+      "error": null
+    },
+    {
+      "id": "hextaui",
+      "seconds": 0.397,
+      "exit": 0,
+      "items": 79,
+      "error": null
+    },
+    {
+      "id": "vengeance",
+      "seconds": 0.503,
+      "exit": 0,
+      "items": 135,
+      "error": null
+    },
+    {
+      "id": "componentry",
+      "seconds": 0.391,
+      "exit": 0,
+      "items": 56,
+      "error": null
+    },
+    {
+      "id": "asciicn",
+      "seconds": 0.616,
+      "exit": 0,
+      "items": 64,
+      "error": null
+    }
+  ]
+}

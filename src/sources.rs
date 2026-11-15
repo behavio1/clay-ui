@@ -9,6 +9,9 @@ use crate::search::Group;
 use serde_json::{json, Value};
 use std::collections::HashMap;
 
+#[path = "community.rs"]
+mod community;
+
 const KOKONUT_RAW: &str = "https://raw.githubusercontent.com/kokonut-labs/kokonutui/main/public/r";
 const COMPONENT_TYPES: [&str; 3] = ["registry:ui", "registry:component", "registry:block"];
 const MAX_SOURCE_FILES: usize = 120;
@@ -477,7 +480,11 @@ fn load_registry(source: &Source, spec: &RegistrySpec) -> Res<Vec<Object>> {
 fn registry_detail(spec: &RegistrySpec, item: &Object) -> Res<Object> {
     let name = item.get("name").and_then(Value::as_str).unwrap_or("");
     let source_url = (spec.item_url)(name);
-    let entry = match fetch_json(&source_url) {
+    registry_detail_url(&source_url, item)
+}
+
+fn registry_detail_url(source_url: &str, item: &Object) -> Res<Object> {
+    let entry = match fetch_json(source_url) {
         Ok(entry) => not_null(entry)?,
         Err(Fail {
             status: Some(status),
@@ -490,6 +497,10 @@ fn registry_detail(spec: &RegistrySpec, item: &Object) -> Res<Object> {
         Err(error) => return Err(error),
     };
     let mut detail = item.clone();
+    if item.contains_key("licenseUrl") && !community::public(&entry) {
+        detail.insert("files".into(), json!([]));
+        return Ok(with_gaps(detail, &["pro-only"]));
+    }
     detail.insert("sourceUrl".into(), json!(source_url));
     copy_revision(&entry, &mut detail);
     if source_url.starts_with(KOKONUT_RAW) {
@@ -518,6 +529,11 @@ fn registry_detail(spec: &RegistrySpec, item: &Object) -> Res<Object> {
             vars.keys().map(|key| json!(key)).collect()
         });
     detail.insert("envVars".into(), Value::Array(env_vars));
+    for key in ["css", "cssVars", "tailwind"] {
+        if let Some(value) = entry.get(key) {
+            detail.insert(key.into(), value.clone());
+        }
+    }
     detail.insert("files".into(), pick_files(&entry)?);
     Ok(detail)
 }
@@ -1356,6 +1372,7 @@ fn search_21st_by_tags(source: &Source, groups: &[Group]) -> Res<(Vec<Object>, V
 
 pub enum Kind {
     Registry(RegistrySpec),
+    Community(community::Spec),
     Single(SinglePackage),
     Radix,
     BaseUi,
@@ -1414,6 +1431,7 @@ impl Source {
         match &self.kind {
             Kind::Registry(spec) if self.id == "aceternity" => load_aceternity(self, spec),
             Kind::Registry(spec) => load_registry(self, spec),
+            Kind::Community(spec) => community::load(self, spec),
             Kind::Single(spec) => load_single(self, spec),
             Kind::Radix => load_radix(self),
             Kind::BaseUi => load_base_ui(self),
@@ -1429,6 +1447,7 @@ impl Source {
                 detail_21st(item, ACETERNITY_OWNER, name)
             }
             Kind::Registry(spec) => registry_detail(spec, item),
+            Kind::Community(spec) => community::detail(spec, item),
             Kind::Single(_) | Kind::Radix | Kind::BaseUi => package_detail(item),
             Kind::RareUi => rareui_detail(item),
             Kind::Live21st => {
@@ -1524,6 +1543,29 @@ pub static SOURCES: &[Source] = &[
     single("vaul", "Vaul", SinglePackage { package: "vaul", docs: Some("https://vaul.emilkowal.ski"), description: "Unstyled drawer and bottom sheet component for React.", keywords: &["drawer", "bottom", "sheet", "mobile"], curated: false, unmaintained: true, repo: "emilkowalski/vaul", dir: "src" }),
     single("cmdk", "cmdk", SinglePackage { package: "cmdk", docs: None, description: "Fast, composable command menu for React (Cmd+K palette). No live demo page: the old site redirects to the GitHub repository.", keywords: &["command", "menu", "palette", "search", "combobox", "cmdk"], curated: true, unmaintained: false, repo: "dip/cmdk", dir: "cmdk/src" }),
     single("number-flow", "NumberFlow", SinglePackage { package: "@number-flow/react", docs: Some("https://number-flow.barvian.me"), description: "Animated number component with digit transitions.", keywords: &["number", "counter", "animated", "price", "stat"], curated: true, unmaintained: false, repo: "barvian/number-flow", dir: "packages/react/src" }),
+    community::source("evilcharts", "Evil Charts", "MIT", community::Spec { index: "https://evilcharts.com/r/registry.json", item: "https://evilcharts.com/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/legions-developer/evilcharts/HEAD/LICENSE", policy: community::Policy::Public }),
+    community::source("origin", "Origin UI", "MIT", community::Spec { index: "https://raw.githubusercontent.com/cosscom/ui/main/apps/origin/registry.json", item: "https://raw.githubusercontent.com/cosscom/ui/main/apps/origin/public/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/cosscom/ui/HEAD/apps/origin/LICENSE.md", policy: community::Policy::Public }),
+    community::source("kibo", "Kibo UI", "MIT", community::Spec { index: "https://www.kibo-ui.com/r/registry.json", item: "https://www.kibo-ui.com/r/{name}.json", preview: Some("https://www.kibo-ui.com/components/{name}"), license_url: "https://raw.githubusercontent.com/shadcnblocks/kibo/HEAD/license.md", policy: community::Policy::Public }),
+    community::source("reui", "ReUI", "MIT", community::Spec { index: "https://reui.io/r/styles/base-nova/registry.json", item: "https://reui.io/r/styles/base-nova/{name}.json", preview: Some("https://reui.io/docs/{name}"), license_url: "https://raw.githubusercontent.com/keenthemes/reui/HEAD/LICENSE.md", policy: community::Policy::UiOnly }),
+    community::source("blocks-so", "blocks.so", "MIT", community::Spec { index: "https://blocks.so/r/registry.json", item: "https://blocks.so/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/ephraimduncan/blocks/HEAD/LICENSE.md", policy: community::Policy::Public }),
+    community::source("motion-primitives", "Motion Primitives", "MIT", community::Spec { index: "https://motion-primitives.com/c/registry.json", item: "https://motion-primitives.com/c/{name}.json", preview: Some("https://motion-primitives.com/docs/{name}"), license_url: "https://raw.githubusercontent.com/ibelick/motion-primitives/HEAD/LICENCE.md", policy: community::Policy::Public }),
+    community::source("smoothui", "SmoothUI", "MIT", community::Spec { index: "https://smoothui.dev/r/registry.json", item: "https://smoothui.dev/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/educlopez/smoothui/HEAD/LICENSE", policy: community::Policy::Public }),
+    community::source("fancy", "Fancy Components", "MIT", community::Spec { index: "https://fancycomponents.dev/r/registry.json", item: "https://fancycomponents.dev/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/danielpetho/fancy/HEAD/LICENSE", policy: community::Policy::UiOnly }),
+    community::source("beui", "BeUI", "MIT", community::Spec { index: "https://beui.dev/r/registry.json", item: "https://beui.dev/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/starc007/ui-components/HEAD/LICENSE", policy: community::Policy::Public }),
+    community::source("uiarc", "UIArc", "MIT", community::Spec { index: "https://uiarc.dev/r/registry.json", item: "https://uiarc.dev/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/kuratlielia/arc-library/HEAD/LICENSE", policy: community::Policy::FreeTier }),
+    community::source("devl", "devl.dev", "MIT", community::Spec { index: "https://devl.dev/r/registry.json", item: "https://devl.dev/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/sean-brydon/devl.dev/HEAD/LICENSE", policy: community::Policy::Public }),
+    community::source("cult", "Cult UI", "MIT", community::Spec { index: "https://www.cult-ui.com/r/registry.json", item: "https://www.cult-ui.com/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/nolly-studio/cult-ui/HEAD/LICENSE.md", policy: community::Policy::Public }),
+    community::source("8bitcn", "8bitcn", "MIT", community::Spec { index: "https://www.8bitcn.com/r/registry.json", item: "https://www.8bitcn.com/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/TheOrcDev/8bitcn-ui/HEAD/license.md", policy: community::Policy::Public }),
+    community::source("shadcn-space", "Shadcn Space", "MIT", community::Spec { index: "https://shadcnspace.com/r/registry.json", item: "https://shadcnspace.com/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/shadcnspace/shadcnspace/HEAD/LICENSE", policy: community::Policy::RepoFree }),
+    community::source("ui-layouts", "UI Layouts", "MIT", community::Spec { index: "https://ui-layouts.com/r/registry.json", item: "https://ui-layouts.com/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/ui-layouts/uilayouts/HEAD/LICENSE", policy: community::Policy::Public }),
+    community::source("spectrum", "Spectrum UI", "Apache-2.0", community::Spec { index: "https://ui.spectrumhq.in/r/registry.json", item: "https://ui.spectrumhq.in/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/arihantcodes/spectrum-ui/HEAD/LICENSE", policy: community::Policy::Public }),
+    community::source("ruixen", "Ruixen UI", "MIT", community::Spec { index: "https://ruixen.com/registry.json", item: "https://ruixen.com/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/ruixenui/ruixen.com/HEAD/LICENSE.md", policy: community::Policy::Public }),
+    community::source("watermelon", "Watermelon UI", "MIT", community::Spec { index: "https://registry.watermelon.sh/r/registry.json", item: "https://registry.watermelon.sh/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/WatermelonCorp/watermelon-platform/HEAD/LICENSE", policy: community::Policy::Public }),
+    community::source("avara", "Avara UI", "MIT", community::Spec { index: "https://avaraui.com/r/registry.json", item: "https://avaraui.com/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/AlgorizeTech/Avara-UI/HEAD/LICENSE", policy: community::Policy::Public }),
+    community::source("hextaui", "HextaUI", "MIT", community::Spec { index: "https://hextaui.com/r/registry.json", item: "https://hextaui.com/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/preetsuthar17/hextaui/HEAD/LICENSE", policy: community::Policy::UiOnly }),
+    community::source("vengeance", "Vengeance UI", "MIT", community::Spec { index: "https://vengenceui.com/r/registry.json", item: "https://vengenceui.com/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/Ashutoshx7/VengeanceUI/HEAD/LICENSE", policy: community::Policy::Public }),
+    community::source("componentry", "Componentry", "MIT", community::Spec { index: "https://componentry.dev/r/registry.json", item: "https://componentry.dev/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/harshjdhv/componentry/HEAD/LICENSE", policy: community::Policy::Public }),
+    community::source("asciicn", "asciicn", "MIT", community::Spec { index: "https://asciicn.dev/r/registry.json", item: "https://asciicn.dev/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/opencoredev/asciicn/HEAD/LICENSE", policy: community::Policy::Public }),
 ];
 
 pub fn source_by_id(id: &str) -> Option<&'static Source> {

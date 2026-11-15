@@ -1,0 +1,26 @@
+{
+  "cargo test --locked": {
+    "status": "PASS",
+    "unit": 24,
+    "integration": 71
+  },
+  "npm run test:node": {
+    "status": "PASS",
+    "tests": 27
+  },
+  "cargo fmt --check": {
+    "status": "PASS"
+  },
+  "cargo clippy --locked --all-targets -- -D warnings": {
+    "status": "PASS"
+  },
+  "python3 scripts/third-party-notices.py --check": {
+    "status": "PASS"
+  },
+  "git diff --check": {
+    "status": "PASS"
+  },
+  "productionRankerAndEmbeddingModuleByteIdenticalToBase": true,
+  "readOnlyDevInputFingerprintsMatch": true,
+  "configuredSecretsAbsentFromNewArtifacts": true
+}

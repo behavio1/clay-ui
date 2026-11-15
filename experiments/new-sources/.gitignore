@@ -1,0 +1,5 @@
+# Live payloads/cache snapshots are outside the review patch. Fingerprints and results are committed.
+evidence/
+*-index.json
+*-sync.log
+cache-location.txt

@@ -1,0 +1,1544 @@
+{
+  "baseline-bm25": {
+    "conservative": {
+      "queries": 120,
+      "families": 24,
+      "intents": 120,
+      "metricDenominators": {
+        "success3at5": 105,
+        "contextSuccess3at5": 60,
+        "correctRejection": 15,
+        "falseAccept": 15,
+        "falseReject": 105,
+        "zeroHit": 120,
+        "recall2at5": 105,
+        "recall2at10": 105,
+        "recall3at5": 105,
+        "recall3at10": 105,
+        "mrr2at5": 105,
+        "mrr2at10": 105,
+        "mrr3at5": 105,
+        "mrr3at10": 105,
+        "ndcg5": 105,
+        "hasUnjudgedTop5": 120,
+        "noKnownRelevant": 105,
+        "noKnownGrade3": 105
+      },
+      "success3at5": 0.5904761904761905,
+      "contextSuccess3at5": 0.45,
+      "correctRejection": 0.06666666666666667,
+      "falseAccept": 0.9333333333333333,
+      "falseReject": 0,
+      "zeroHit": 0.008333333333333333,
+      "recall2at5": 0.5356122448979593,
+      "recall2at10": 0.5356122448979593,
+      "recall3at5": 0.4847619047619047,
+      "recall3at10": 0.4847619047619047,
+      "mrr2at5": 0.6934920634920636,
+      "mrr2at10": 0.6934920634920636,
+      "mrr3at5": 0.4909523809523811,
+      "mrr3at10": 0.4909523809523811,
+      "ndcg5": 0.5272254567294998,
+      "hasUnjudgedTop5": 0.8666666666666667,
+      "noKnownRelevant": 0.06666666666666667,
+      "noKnownGrade3": 0.3047619047619048,
+      "unjudgedTop5Count": 303,
+      "top5Count": 539,
+      "unjudgedTop5Rate": 0.562152133580705,
+      "errors": 0
+    },
+    "optimistic": {
+      "queries": 120,
+      "families": 24,
+      "intents": 120,
+      "metricDenominators": {
+        "success3at5": 105,
+        "contextSuccess3at5": 60,
+        "correctRejection": 15,
+        "falseAccept": 15,
+        "falseReject": 105,
+        "zeroHit": 120,
+        "recall2at5": 105,
+        "recall2at10": 105,
+        "recall3at5": 105,
+        "recall3at10": 105,
+        "mrr2at5": 105,
+        "mrr2at10": 105,
+        "mrr3at5": 105,
+        "mrr3at10": 105,
+        "ndcg5": 105,
+        "hasUnjudgedTop5": 120,
+        "noKnownRelevant": 105,
+        "noKnownGrade3": 105
+      },
+      "success3at5": 0.9904761904761905,
+      "contextSuccess3at5": 0.9833333333333333,
+      "correctRejection": 0.06666666666666667,
+      "falseAccept": 0.9333333333333333,
+      "falseReject": 0,
+      "zeroHit": 0.008333333333333333,
+      "recall2at5": 0.7787978423692704,
+      "recall2at10": 0.7787978423692704,
+      "recall3at5": 0.8997619047619045,
+      "recall3at10": 0.8997619047619045,
+      "mrr2at5": 0.9714285714285714,
+      "mrr2at10": 0.9714285714285714,
+      "mrr3at5": 0.8733333333333334,
+      "mrr3at10": 0.8733333333333334,
+      "ndcg5": 0.887239153539183,
+      "hasUnjudgedTop5": 0.8666666666666667,
+      "noKnownRelevant": 0.06666666666666667,
+      "noKnownGrade3": 0.3047619047619048,
+      "unjudgedTop5Count": 303,
+      "top5Count": 539,
+      "unjudgedTop5Rate": 0.562152133580705,
+      "errors": 0
+    },
+    "bootstrap": {
+      "iterations": 10000,
+      "seed": 20261109,
+      "unit": "family",
+      "ci95": {
+        "success3at5": {
+          "low": 0.4090909090909091,
+          "high": 0.7652173913043478,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "contextSuccess3at5": {
+          "low": 0.18461538461538463,
+          "high": 0.7272727272727273,
+          "families": 12,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "correctRejection": {
+          "low": 0,
+          "high": 0.2,
+          "families": 3,
+          "degenerate": false,
+          "validReplicates": 9594
+        },
+        "falseAccept": {
+          "low": 0.8,
+          "high": 1,
+          "families": 3,
+          "degenerate": false,
+          "validReplicates": 9594
+        },
+        "falseReject": {
+          "low": 0,
+          "high": 0,
+          "families": 21,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "zeroHit": {
+          "low": 0,
+          "high": 0.025,
+          "families": 24,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall2at5": {
+          "low": 0.42018398268398266,
+          "high": 0.6486471861471862,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall2at10": {
+          "low": 0.42018398268398266,
+          "high": 0.6486471861471862,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at5": {
+          "low": 0.3233333333333333,
+          "high": 0.6433333333333331,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at10": {
+          "low": 0.3233333333333333,
+          "high": 0.6433333333333331,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at5": {
+          "low": 0.5450877192982456,
+          "high": 0.8307017543859649,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at10": {
+          "low": 0.5450877192982456,
+          "high": 0.8307017543859649,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at5": {
+          "low": 0.3220289855072464,
+          "high": 0.6610606060606062,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at10": {
+          "low": 0.3220289855072464,
+          "high": 0.6610606060606062,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "ndcg5": {
+          "low": 0.4189933145604769,
+          "high": 0.6330347073207969,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "hasUnjudgedTop5": {
+          "low": 0.7416666666666667,
+          "high": 0.9666666666666667,
+          "families": 24,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownRelevant": {
+          "low": 0,
+          "high": 0.18,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownGrade3": {
+          "low": 0.1565217391304348,
+          "high": 0.4666666666666667,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        }
+      },
+      "optimisticCi95": {
+        "success3at5": {
+          "low": 0.968421052631579,
+          "high": 1,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "contextSuccess3at5": {
+          "low": 0.9454545454545454,
+          "high": 1,
+          "families": 12,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "correctRejection": {
+          "low": 0,
+          "high": 0.2,
+          "families": 3,
+          "degenerate": false,
+          "validReplicates": 9594
+        },
+        "falseAccept": {
+          "low": 0.8,
+          "high": 1,
+          "families": 3,
+          "degenerate": false,
+          "validReplicates": 9594
+        },
+        "falseReject": {
+          "low": 0,
+          "high": 0,
+          "families": 21,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "zeroHit": {
+          "low": 0,
+          "high": 0.025,
+          "families": 24,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall2at5": {
+          "low": 0.7215587851302137,
+          "high": 0.8351208513708517,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall2at10": {
+          "low": 0.7215587851302137,
+          "high": 0.8351208513708517,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at5": {
+          "low": 0.8588961038961037,
+          "high": 0.9374327122153209,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at10": {
+          "low": 0.8588961038961037,
+          "high": 0.9374327122153209,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at5": {
+          "low": 0.9454545454545454,
+          "high": 0.991304347826087,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at10": {
+          "low": 0.9454545454545454,
+          "high": 0.991304347826087,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at5": {
+          "low": 0.7929629629629631,
+          "high": 0.9408695652173912,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at10": {
+          "low": 0.7929629629629631,
+          "high": 0.9408695652173912,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "ndcg5": {
+          "low": 0.8576422817978809,
+          "high": 0.9167562247402379,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "hasUnjudgedTop5": {
+          "low": 0.7416666666666667,
+          "high": 0.9666666666666667,
+          "families": 24,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownRelevant": {
+          "low": 0,
+          "high": 0.18,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownGrade3": {
+          "low": 0.1565217391304348,
+          "high": 0.4666666666666667,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        }
+      }
+    },
+    "gates": {
+      "labelsComplete": false,
+      "operationalPass": false,
+      "statisticallyConfirmed": false
+    }
+  },
+  "baseline-gemini": {
+    "conservative": {
+      "queries": 120,
+      "families": 24,
+      "intents": 120,
+      "metricDenominators": {
+        "success3at5": 105,
+        "contextSuccess3at5": 60,
+        "correctRejection": 15,
+        "falseAccept": 15,
+        "falseReject": 105,
+        "zeroHit": 120,
+        "recall2at5": 105,
+        "recall2at10": 105,
+        "recall3at5": 105,
+        "recall3at10": 105,
+        "mrr2at5": 105,
+        "mrr2at10": 105,
+        "mrr3at5": 105,
+        "mrr3at10": 105,
+        "ndcg5": 105,
+        "hasUnjudgedTop5": 120,
+        "noKnownRelevant": 105,
+        "noKnownGrade3": 105
+      },
+      "success3at5": 0.6571428571428571,
+      "contextSuccess3at5": 0.48333333333333334,
+      "correctRejection": 0.2,
+      "falseAccept": 0.8,
+      "falseReject": 0.009523809523809525,
+      "zeroHit": 0.03333333333333333,
+      "recall2at5": 0.6135714285714287,
+      "recall2at10": 0.6135714285714287,
+      "recall3at5": 0.5538095238095238,
+      "recall3at10": 0.5538095238095238,
+      "mrr2at5": 0.7598412698412699,
+      "mrr2at10": 0.7598412698412699,
+      "mrr3at5": 0.537936507936508,
+      "mrr3at10": 0.537936507936508,
+      "ndcg5": 0.6262799385304422,
+      "hasUnjudgedTop5": 0.7166666666666667,
+      "noKnownRelevant": 0.06666666666666667,
+      "noKnownGrade3": 0.3047619047619048,
+      "unjudgedTop5Count": 191,
+      "top5Count": 502,
+      "unjudgedTop5Rate": 0.3804780876494024,
+      "errors": 0
+    },
+    "optimistic": {
+      "queries": 120,
+      "families": 24,
+      "intents": 120,
+      "metricDenominators": {
+        "success3at5": 105,
+        "contextSuccess3at5": 60,
+        "correctRejection": 15,
+        "falseAccept": 15,
+        "falseReject": 105,
+        "zeroHit": 120,
+        "recall2at5": 105,
+        "recall2at10": 105,
+        "recall3at5": 105,
+        "recall3at10": 105,
+        "mrr2at5": 105,
+        "mrr2at10": 105,
+        "mrr3at5": 105,
+        "mrr3at10": 105,
+        "ndcg5": 105,
+        "hasUnjudgedTop5": 120,
+        "noKnownRelevant": 105,
+        "noKnownGrade3": 105
+      },
+      "success3at5": 0.9428571428571428,
+      "contextSuccess3at5": 0.9,
+      "correctRejection": 0.2,
+      "falseAccept": 0.8,
+      "falseReject": 0.009523809523809525,
+      "zeroHit": 0.03333333333333333,
+      "recall2at5": 0.7762055933484504,
+      "recall2at10": 0.7762055933484504,
+      "recall3at5": 0.8634920634920631,
+      "recall3at10": 0.8634920634920631,
+      "mrr2at5": 0.9217460317460319,
+      "mrr2at10": 0.9217460317460319,
+      "mrr3at5": 0.7784126984126984,
+      "mrr3at10": 0.7784126984126984,
+      "ndcg5": 0.8294837956924143,
+      "hasUnjudgedTop5": 0.7166666666666667,
+      "noKnownRelevant": 0.06666666666666667,
+      "noKnownGrade3": 0.3047619047619048,
+      "unjudgedTop5Count": 191,
+      "top5Count": 502,
+      "unjudgedTop5Rate": 0.3804780876494024,
+      "errors": 0
+    },
+    "bootstrap": {
+      "iterations": 10000,
+      "seed": 20261109,
+      "unit": "family",
+      "ci95": {
+        "success3at5": {
+          "low": 0.4857142857142857,
+          "high": 0.819047619047619,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "contextSuccess3at5": {
+          "low": 0.24615384615384617,
+          "high": 0.7285714285714285,
+          "families": 12,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "correctRejection": {
+          "low": 0,
+          "high": 0.4,
+          "families": 3,
+          "degenerate": false,
+          "validReplicates": 9594
+        },
+        "falseAccept": {
+          "low": 0.6,
+          "high": 1,
+          "families": 3,
+          "degenerate": false,
+          "validReplicates": 9594
+        },
+        "falseReject": {
+          "low": 0,
+          "high": 0.031578947368421054,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "zeroHit": {
+          "low": 0,
+          "high": 0.075,
+          "families": 24,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall2at5": {
+          "low": 0.5065714285714286,
+          "high": 0.7121547619047619,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall2at10": {
+          "low": 0.5065714285714286,
+          "high": 0.7121547619047619,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at5": {
+          "low": 0.4016666666666667,
+          "high": 0.6992753623188405,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at10": {
+          "low": 0.4016666666666667,
+          "high": 0.6992753623188405,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at5": {
+          "low": 0.6211666666666666,
+          "high": 0.8790909090909091,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at10": {
+          "low": 0.6211666666666666,
+          "high": 0.8790909090909091,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at5": {
+          "low": 0.3747826086956523,
+          "high": 0.6980701754385964,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at10": {
+          "low": 0.3747826086956523,
+          "high": 0.6980701754385964,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "ndcg5": {
+          "low": 0.5374388398834975,
+          "high": 0.7090234206029558,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "hasUnjudgedTop5": {
+          "low": 0.5916666666666667,
+          "high": 0.8333333333333334,
+          "families": 24,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownRelevant": {
+          "low": 0,
+          "high": 0.18,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownGrade3": {
+          "low": 0.1565217391304348,
+          "high": 0.4666666666666667,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        }
+      },
+      "optimisticCi95": {
+        "success3at5": {
+          "low": 0.8666666666666667,
+          "high": 1,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "contextSuccess3at5": {
+          "low": 0.775,
+          "high": 1,
+          "families": 12,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "correctRejection": {
+          "low": 0,
+          "high": 0.4,
+          "families": 3,
+          "degenerate": false,
+          "validReplicates": 9594
+        },
+        "falseAccept": {
+          "low": 0.6,
+          "high": 1,
+          "families": 3,
+          "degenerate": false,
+          "validReplicates": 9594
+        },
+        "falseReject": {
+          "low": 0,
+          "high": 0.031578947368421054,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "zeroHit": {
+          "low": 0,
+          "high": 0.075,
+          "families": 24,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall2at5": {
+          "low": 0.7185894660894661,
+          "high": 0.8319463340891908,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall2at10": {
+          "low": 0.7185894660894661,
+          "high": 0.8319463340891908,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at5": {
+          "low": 0.7936190476190476,
+          "high": 0.9233333333333332,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at10": {
+          "low": 0.7936190476190476,
+          "high": 0.9233333333333332,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at5": {
+          "low": 0.8525396825396825,
+          "high": 0.9727272727272728,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at10": {
+          "low": 0.8525396825396825,
+          "high": 0.9727272727272728,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at5": {
+          "low": 0.6600000000000001,
+          "high": 0.882063492063492,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at10": {
+          "low": 0.6600000000000001,
+          "high": 0.882063492063492,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "ndcg5": {
+          "low": 0.7838482439631438,
+          "high": 0.8714189258679019,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "hasUnjudgedTop5": {
+          "low": 0.5916666666666667,
+          "high": 0.8333333333333334,
+          "families": 24,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownRelevant": {
+          "low": 0,
+          "high": 0.18,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownGrade3": {
+          "low": 0.1565217391304348,
+          "high": 0.4666666666666667,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        }
+      }
+    },
+    "gates": {
+      "labelsComplete": false,
+      "operationalPass": false,
+      "statisticallyConfirmed": false
+    }
+  },
+  "expanded-bm25": {
+    "conservative": {
+      "queries": 120,
+      "families": 24,
+      "intents": 120,
+      "metricDenominators": {
+        "success3at5": 105,
+        "contextSuccess3at5": 60,
+        "correctRejection": 15,
+        "falseAccept": 15,
+        "falseReject": 105,
+        "zeroHit": 120,
+        "recall2at5": 105,
+        "recall2at10": 105,
+        "recall3at5": 105,
+        "recall3at10": 105,
+        "mrr2at5": 105,
+        "mrr2at10": 105,
+        "mrr3at5": 105,
+        "mrr3at10": 105,
+        "ndcg5": 105,
+        "hasUnjudgedTop5": 120,
+        "noKnownRelevant": 105,
+        "noKnownGrade3": 105
+      },
+      "success3at5": 0.2761904761904762,
+      "contextSuccess3at5": 0.3333333333333333,
+      "correctRejection": 0,
+      "falseAccept": 1,
+      "falseReject": 0,
+      "zeroHit": 0,
+      "recall2at5": 0.15405895691609978,
+      "recall2at10": 0.15405895691609978,
+      "recall3at5": 0.1992063492063492,
+      "recall3at10": 0.1992063492063492,
+      "mrr2at5": 0.2457142857142857,
+      "mrr2at10": 0.2457142857142857,
+      "mrr3at5": 0.20952380952380953,
+      "mrr3at10": 0.20952380952380953,
+      "ndcg5": 0.16993665328594623,
+      "hasUnjudgedTop5": 0.9,
+      "noKnownRelevant": 0.06666666666666667,
+      "noKnownGrade3": 0.3047619047619048,
+      "unjudgedTop5Count": 501,
+      "top5Count": 552,
+      "unjudgedTop5Rate": 0.907608695652174,
+      "errors": 0
+    },
+    "optimistic": {
+      "queries": 120,
+      "families": 24,
+      "intents": 120,
+      "metricDenominators": {
+        "success3at5": 105,
+        "contextSuccess3at5": 60,
+        "correctRejection": 15,
+        "falseAccept": 15,
+        "falseReject": 105,
+        "zeroHit": 120,
+        "recall2at5": 105,
+        "recall2at10": 105,
+        "recall3at5": 105,
+        "recall3at10": 105,
+        "mrr2at5": 105,
+        "mrr2at10": 105,
+        "mrr3at5": 105,
+        "mrr3at10": 105,
+        "ndcg5": 105,
+        "hasUnjudgedTop5": 120,
+        "noKnownRelevant": 105,
+        "noKnownGrade3": 105
+      },
+      "success3at5": 1,
+      "contextSuccess3at5": 1,
+      "correctRejection": 0,
+      "falseAccept": 1,
+      "falseReject": 0,
+      "zeroHit": 0,
+      "recall2at5": 0.675535813392956,
+      "recall2at10": 0.675535813392956,
+      "recall3at5": 0.8517951625094476,
+      "recall3at10": 0.8517951625094476,
+      "mrr2at5": 1,
+      "mrr2at10": 1,
+      "mrr3at5": 0.9857142857142858,
+      "mrr3at10": 0.9857142857142858,
+      "ndcg5": 0.9646689119572045,
+      "hasUnjudgedTop5": 0.9,
+      "noKnownRelevant": 0.06666666666666667,
+      "noKnownGrade3": 0.3047619047619048,
+      "unjudgedTop5Count": 501,
+      "top5Count": 552,
+      "unjudgedTop5Rate": 0.907608695652174,
+      "errors": 0
+    },
+    "bootstrap": {
+      "iterations": 10000,
+      "seed": 20261109,
+      "unit": "family",
+      "ci95": {
+        "success3at5": {
+          "low": 0.14,
+          "high": 0.43333333333333335,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "contextSuccess3at5": {
+          "low": 0.1,
+          "high": 0.6,
+          "families": 12,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "correctRejection": {
+          "low": 0,
+          "high": 0,
+          "families": 3,
+          "degenerate": true,
+          "validReplicates": 9594
+        },
+        "falseAccept": {
+          "low": 1,
+          "high": 1,
+          "families": 3,
+          "degenerate": true,
+          "validReplicates": 9594
+        },
+        "falseReject": {
+          "low": 0,
+          "high": 0,
+          "families": 21,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "zeroHit": {
+          "low": 0,
+          "high": 0,
+          "families": 24,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "recall2at5": {
+          "low": 0.06336134453781513,
+          "high": 0.2703174603174603,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall2at10": {
+          "low": 0.06336134453781513,
+          "high": 0.2703174603174603,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at5": {
+          "low": 0.07753623188405796,
+          "high": 0.35,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at10": {
+          "low": 0.07753623188405796,
+          "high": 0.35,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at5": {
+          "low": 0.11904761904761904,
+          "high": 0.401304347826087,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at10": {
+          "low": 0.11904761904761904,
+          "high": 0.401304347826087,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at5": {
+          "low": 0.07952380952380952,
+          "high": 0.37105263157894736,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at10": {
+          "low": 0.07952380952380952,
+          "high": 0.37105263157894736,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "ndcg5": {
+          "low": 0.0699494128148764,
+          "high": 0.29424662243538835,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "hasUnjudgedTop5": {
+          "low": 0.775,
+          "high": 1,
+          "families": 24,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownRelevant": {
+          "low": 0,
+          "high": 0.18,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownGrade3": {
+          "low": 0.1565217391304348,
+          "high": 0.4666666666666667,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        }
+      },
+      "optimisticCi95": {
+        "success3at5": {
+          "low": 1,
+          "high": 1,
+          "families": 21,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "contextSuccess3at5": {
+          "low": 1,
+          "high": 1,
+          "families": 12,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "correctRejection": {
+          "low": 0,
+          "high": 0,
+          "families": 3,
+          "degenerate": true,
+          "validReplicates": 9594
+        },
+        "falseAccept": {
+          "low": 1,
+          "high": 1,
+          "families": 3,
+          "degenerate": true,
+          "validReplicates": 9594
+        },
+        "falseReject": {
+          "low": 0,
+          "high": 0,
+          "families": 21,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "zeroHit": {
+          "low": 0,
+          "high": 0,
+          "families": 24,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "recall2at5": {
+          "low": 0.6235342435342436,
+          "high": 0.7344949787055052,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall2at10": {
+          "low": 0.6235342435342436,
+          "high": 0.7344949787055052,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at5": {
+          "low": 0.8019423558897243,
+          "high": 0.9004535147392286,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at10": {
+          "low": 0.8019423558897243,
+          "high": 0.9004535147392286,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at5": {
+          "low": 1,
+          "high": 1,
+          "families": 21,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "mrr2at10": {
+          "low": 1,
+          "high": 1,
+          "families": 21,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "mrr3at5": {
+          "low": 0.9695652173913043,
+          "high": 1,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at10": {
+          "low": 0.9695652173913043,
+          "high": 1,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "ndcg5": {
+          "low": 0.9347162986727336,
+          "high": 0.9885474091858373,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "hasUnjudgedTop5": {
+          "low": 0.775,
+          "high": 1,
+          "families": 24,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownRelevant": {
+          "low": 0,
+          "high": 0.18,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownGrade3": {
+          "low": 0.1565217391304348,
+          "high": 0.4666666666666667,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        }
+      }
+    },
+    "gates": {
+      "labelsComplete": false,
+      "operationalPass": false,
+      "statisticallyConfirmed": false
+    }
+  },
+  "expanded-gemini": {
+    "conservative": {
+      "queries": 120,
+      "families": 24,
+      "intents": 120,
+      "metricDenominators": {
+        "success3at5": 105,
+        "contextSuccess3at5": 60,
+        "correctRejection": 15,
+        "falseAccept": 15,
+        "falseReject": 105,
+        "zeroHit": 120,
+        "recall2at5": 105,
+        "recall2at10": 105,
+        "recall3at5": 105,
+        "recall3at10": 105,
+        "mrr2at5": 105,
+        "mrr2at10": 105,
+        "mrr3at5": 105,
+        "mrr3at10": 105,
+        "ndcg5": 105,
+        "hasUnjudgedTop5": 120,
+        "noKnownRelevant": 105,
+        "noKnownGrade3": 105
+      },
+      "success3at5": 0.3142857142857143,
+      "contextSuccess3at5": 0.38333333333333336,
+      "correctRejection": 0,
+      "falseAccept": 1,
+      "falseReject": 0,
+      "zeroHit": 0,
+      "recall2at5": 0.1858049886621315,
+      "recall2at10": 0.1858049886621315,
+      "recall3at5": 0.22380952380952376,
+      "recall3at10": 0.22380952380952376,
+      "mrr2at5": 0.25349206349206344,
+      "mrr2at10": 0.25349206349206344,
+      "mrr3at5": 0.22634920634920633,
+      "mrr3at10": 0.22634920634920633,
+      "ndcg5": 0.1785051986666326,
+      "hasUnjudgedTop5": 0.9166666666666666,
+      "noKnownRelevant": 0.06666666666666667,
+      "noKnownGrade3": 0.3047619047619048,
+      "unjudgedTop5Count": 489,
+      "top5Count": 554,
+      "unjudgedTop5Rate": 0.8826714801444043,
+      "errors": 0
+    },
+    "optimistic": {
+      "queries": 120,
+      "families": 24,
+      "intents": 120,
+      "metricDenominators": {
+        "success3at5": 105,
+        "contextSuccess3at5": 60,
+        "correctRejection": 15,
+        "falseAccept": 15,
+        "falseReject": 105,
+        "zeroHit": 120,
+        "recall2at5": 105,
+        "recall2at10": 105,
+        "recall3at5": 105,
+        "recall3at10": 105,
+        "mrr2at5": 105,
+        "mrr2at10": 105,
+        "mrr3at5": 105,
+        "mrr3at10": 105,
+        "ndcg5": 105,
+        "hasUnjudgedTop5": 120,
+        "noKnownRelevant": 105,
+        "noKnownGrade3": 105
+      },
+      "success3at5": 1,
+      "contextSuccess3at5": 1,
+      "correctRejection": 0,
+      "falseAccept": 1,
+      "falseReject": 0,
+      "zeroHit": 0,
+      "recall2at5": 0.6790550190550186,
+      "recall2at10": 0.6790550190550186,
+      "recall3at5": 0.8522902494331062,
+      "recall3at10": 0.8522902494331062,
+      "mrr2at5": 0.9952380952380953,
+      "mrr2at10": 0.9952380952380953,
+      "mrr3at5": 0.9904761904761905,
+      "mrr3at10": 0.9904761904761905,
+      "ndcg5": 0.9578196957057813,
+      "hasUnjudgedTop5": 0.9166666666666666,
+      "noKnownRelevant": 0.06666666666666667,
+      "noKnownGrade3": 0.3047619047619048,
+      "unjudgedTop5Count": 489,
+      "top5Count": 554,
+      "unjudgedTop5Rate": 0.8826714801444043,
+      "errors": 0
+    },
+    "bootstrap": {
+      "iterations": 10000,
+      "seed": 20261109,
+      "unit": "family",
+      "ci95": {
+        "success3at5": {
+          "low": 0.17142857142857143,
+          "high": 0.475,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "contextSuccess3at5": {
+          "low": 0.13846153846153847,
+          "high": 0.6545454545454545,
+          "families": 12,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "correctRejection": {
+          "low": 0,
+          "high": 0,
+          "families": 3,
+          "degenerate": true,
+          "validReplicates": 9594
+        },
+        "falseAccept": {
+          "low": 1,
+          "high": 1,
+          "families": 3,
+          "degenerate": true,
+          "validReplicates": 9594
+        },
+        "falseReject": {
+          "low": 0,
+          "high": 0,
+          "families": 21,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "zeroHit": {
+          "low": 0,
+          "high": 0,
+          "families": 24,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "recall2at5": {
+          "low": 0.09301587301587301,
+          "high": 0.2984415584415584,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall2at10": {
+          "low": 0.09301587301587301,
+          "high": 0.2984415584415584,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at5": {
+          "low": 0.10333333333333333,
+          "high": 0.3698412698412698,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at10": {
+          "low": 0.10333333333333333,
+          "high": 0.3698412698412698,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at5": {
+          "low": 0.1211111111111111,
+          "high": 0.40984126984126984,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at10": {
+          "low": 0.1211111111111111,
+          "high": 0.40984126984126984,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at5": {
+          "low": 0.09541666666666664,
+          "high": 0.38391304347826094,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at10": {
+          "low": 0.09541666666666664,
+          "high": 0.38391304347826094,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "ndcg5": {
+          "low": 0.08082649487387436,
+          "high": 0.29909567038459245,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "hasUnjudgedTop5": {
+          "low": 0.8166666666666667,
+          "high": 1,
+          "families": 24,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownRelevant": {
+          "low": 0,
+          "high": 0.18,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownGrade3": {
+          "low": 0.1565217391304348,
+          "high": 0.4666666666666667,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        }
+      },
+      "optimisticCi95": {
+        "success3at5": {
+          "low": 1,
+          "high": 1,
+          "families": 21,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "contextSuccess3at5": {
+          "low": 1,
+          "high": 1,
+          "families": 12,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "correctRejection": {
+          "low": 0,
+          "high": 0,
+          "families": 3,
+          "degenerate": true,
+          "validReplicates": 9594
+        },
+        "falseAccept": {
+          "low": 1,
+          "high": 1,
+          "families": 3,
+          "degenerate": true,
+          "validReplicates": 9594
+        },
+        "falseReject": {
+          "low": 0,
+          "high": 0,
+          "families": 21,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "zeroHit": {
+          "low": 0,
+          "high": 0,
+          "families": 24,
+          "degenerate": true,
+          "validReplicates": 10000
+        },
+        "recall2at5": {
+          "low": 0.6262977843412624,
+          "high": 0.7364914946164948,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall2at10": {
+          "low": 0.6262977843412624,
+          "high": 0.7364914946164948,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at5": {
+          "low": 0.8036075036075034,
+          "high": 0.8991547619047618,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "recall3at10": {
+          "low": 0.8036075036075034,
+          "high": 0.8991547619047618,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at5": {
+          "low": 0.985,
+          "high": 1,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr2at10": {
+          "low": 0.985,
+          "high": 1,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at5": {
+          "low": 0.9761904761904762,
+          "high": 1,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "mrr3at10": {
+          "low": 0.9761904761904762,
+          "high": 1,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "ndcg5": {
+          "low": 0.9235915033652168,
+          "high": 0.9854826580779463,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "hasUnjudgedTop5": {
+          "low": 0.8166666666666667,
+          "high": 1,
+          "families": 24,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownRelevant": {
+          "low": 0,
+          "high": 0.18,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        },
+        "noKnownGrade3": {
+          "low": 0.1565217391304348,
+          "high": 0.4666666666666667,
+          "families": 21,
+          "degenerate": false,
+          "validReplicates": 10000
+        }
+      }
+    },
+    "gates": {
+      "labelsComplete": false,
+      "operationalPass": false,
+      "statisticallyConfirmed": false
+    }
+  },
+  "bm25-paired": {
+    "iterations": 10000,
+    "seed": 20261109,
+    "unit": "family",
+    "conservative": {
+      "delta": {
+        "success3at5": -0.3142857142857143,
+        "contextSuccess3at5": -0.1166666666666667,
+        "correctRejection": -0.06666666666666667
+      },
+      "ci95": {
+        "success3at5": {
+          "low": -0.46956521739130436,
+          "high": -0.16521739130434782
+        },
+        "contextSuccess3at5": {
+          "low": -0.2727272727272727,
+          "high": 0
+        },
+        "correctRejection": {
+          "low": -0.2,
+          "high": 0
+        }
+      }
+    },
+    "optimistic": {
+      "delta": {
+        "success3at5": 0.00952380952380949,
+        "contextSuccess3at5": 0.01666666666666672,
+        "correctRejection": -0.06666666666666667
+      },
+      "ci95": {
+        "success3at5": {
+          "low": 0,
+          "high": 0.031578947368421054
+        },
+        "contextSuccess3at5": {
+          "low": 0,
+          "high": 0.05454545454545454
+        },
+        "correctRejection": {
+          "low": -0.2,
+          "high": 0
+        }
+      }
+    }
+  },
+  "gemini-paired": {
+    "iterations": 10000,
+    "seed": 20261109,
+    "unit": "family",
+    "conservative": {
+      "delta": {
+        "success3at5": -0.34285714285714286,
+        "contextSuccess3at5": -0.09999999999999998,
+        "correctRejection": -0.2
+      },
+      "ci95": {
+        "success3at5": {
+          "low": -0.49,
+          "high": -0.2
+        },
+        "contextSuccess3at5": {
+          "low": -0.2222222222222222,
+          "high": 0
+        },
+        "correctRejection": {
+          "low": -0.4,
+          "high": 0
+        }
+      }
+    },
+    "optimistic": {
+      "delta": {
+        "success3at5": 0.05714285714285716,
+        "contextSuccess3at5": 0.09999999999999998,
+        "correctRejection": -0.2
+      },
+      "ci95": {
+        "success3at5": {
+          "low": 0,
+          "high": 0.13333333333333333
+        },
+        "contextSuccess3at5": {
+          "low": 0,
+          "high": 0.225
+        },
+        "correctRejection": {
+          "low": -0.4,
+          "high": 0
+        }
+      }
+    }
+  }
+}

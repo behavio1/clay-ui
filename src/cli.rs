@@ -1193,6 +1193,13 @@ fn cmd_get(args: &Args) -> CliResult {
         "version",
         "missingLocalImports",
         "license",
+        "licenseUrl",
+        "registryType",
+        "registryItems",
+        "example",
+        "css",
+        "cssVars",
+        "tailwind",
         "cacheWarning",
         "cacheAgeDays",
     ] {
