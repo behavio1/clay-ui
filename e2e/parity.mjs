@@ -360,7 +360,7 @@ async function realParity() {
   }
   console.table(report.order);
   const details = [];
-  for (const id of ['shadcn/dialog', 'magicui/marquee', 'aceternity/aurora-background', 'kokonut/carousel-cards', 'beautifului/loading-state', 'rareui/LiquidButton', 'base-ui/dialog', 'radix/tooltip', 'sonner/sonner', 'vaul/vaul', 'cmdk/cmdk', 'number-flow/number-flow']) {
+  for (const id of ['shadcn/dialog', 'magicui/marquee', 'aceternity/aurora-background', 'kokonut/carousel-cards', 'beautifului/loading-state', 'rareui/liquid-button', 'base-ui/dialog', 'radix/tooltip', 'sonner/sonner', 'vaul/vaul', 'cmdk/cmdk', 'number-flow/number-flow']) {
     const args = ['get', id, '--out', 'out', '--json'];
     const [left, right] = [await nodeRunner.run(args), await rustRunner.run(args)];
     const files = (result) => { try { return JSON.parse(result.out).files; } catch { return null; } };
@@ -372,7 +372,8 @@ async function realParity() {
   console.table(details);
   const orderFailures = report.order.filter((row) => !row.same);
   const indexFailures = report.indexDifferences.filter((row) => !row.sameOrder || row.node !== row.rust || row.differingFields !== '-');
-  const detailFailures = details.filter((row) => row.exit.split('/')[0] !== row.exit.split('/')[1] || !row.sameFiles);
+  // Identical failures in both CLIs are still failures: every listed component must download.
+  const detailFailures = details.filter((row) => row.exit !== '0/0' || !row.sameFiles || !row.files);
   console.log(`Sources with differing index: ${indexFailures.length}/${report.indexDifferences.length}. Queries with differing order: ${orderFailures.length}/${report.order.length}. Downloads differing: ${detailFailures.length}/${details.length}.`);
   process.exitCode = orderFailures.length || indexFailures.length || detailFailures.length ? 1 : 0;
 }
