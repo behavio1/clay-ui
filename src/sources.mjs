@@ -238,11 +238,11 @@ function baseUiSource() {
 // --- RareUI ---------------------------------------------------------------
 
 function rareUiSource() {
-  const source = { id: 'rareui', title: 'RareUI', access: 'registry + repo docs', license: 'MIT' };
+  const source = { id: 'rareui', title: 'ShitUI (formerly RareUI)', access: 'registry + repo docs', license: 'MIT' };
   const squash = (text) => text.toLowerCase().replace(/[^a-z0-9]/g, '');
-  const registryItem = (registryName) => `https://rareui.in/r/${encodeURIComponent(registryName)}.json`;
+  const registryItem = (registryName) => `https://shitui.in/r/${encodeURIComponent(registryName)}.json`;
   source.load = async () => {
-    const [index, tree] = await Promise.all([fetchJson('https://rareui.in/r/index.json'), repoTree('Codewithswappy/RareUI')]);
+    const [index, tree] = await Promise.all([fetchJson('https://shitui.in/r/index.json'), repoTree('Codewithswappy/ShitUI')]);
     if (!Array.isArray(index.components)) throw new SourceError('rareui: unexpected index shape');
     const docs = new Map();
     for (const { path: file } of tree) {
@@ -251,13 +251,13 @@ function rareUiSource() {
     }
     return mapLimit(index.components.filter((name) => SAFE_NAME.test(name)), 8, async (registryName) => {
       const doc = docs.get(squash(registryName));
-      const text = doc ? await fetchText(`https://raw.githubusercontent.com/Codewithswappy/RareUI/main/${doc.file.split('/').map(encodeURIComponent).join('/')}`).catch(() => '') : '';
+      const text = doc ? await fetchText(`https://raw.githubusercontent.com/Codewithswappy/ShitUI/main/${doc.file.split('/').map(encodeURIComponent).join('/')}`).catch(() => '') : '';
       return withGaps(candidate(source, {
         name: registryName,
         title: frontmatter(text, 'title') || titleFromSlug(registryName.replace(/([a-z])([A-Z])/g, '$1-$2')),
         description: frontmatter(text, 'description'),
         keywords: doc ? [doc.category] : [],
-        previewUrl: doc ? `https://rareui.in/docs/${doc.category}/${doc.slug}` : null,
+        previewUrl: doc ? `https://shitui.in/docs/${doc.category}/${doc.slug}` : null,
       }));
     });
   };

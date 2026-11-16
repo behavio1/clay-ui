@@ -1522,7 +1522,7 @@ fn missing_local_imports_are_metadata_and_do_not_block_get_or_change_ranking() {
             if call.path.contains("raw.githubusercontent") {
                 return ok(content);
             }
-            if call.path.contains("rareui.in") {
+            if call.path.contains("shitui.in") {
                 return ok(json!({"files":[{"path":path,"content":content}]}).to_string());
             }
             ok("# Usage")

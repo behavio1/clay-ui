@@ -908,8 +908,8 @@ struct RareDoc {
 
 fn load_rareui(source: &Source) -> Res<Vec<Object>> {
     let (index, tree) = join(
-        || fetch_json("https://rareui.in/r/index.json"),
-        || repo_tree("Codewithswappy/RareUI"),
+        || fetch_json("https://shitui.in/r/index.json"),
+        || repo_tree("Codewithswappy/ShitUI"),
     );
     let index = not_null(index?)?;
     let tree = tree?;
@@ -938,7 +938,7 @@ fn load_rareui(source: &Source) -> Res<Vec<Object>> {
         let doc = docs.get(&squash(name));
         let text = doc.map_or(String::new(), |doc| {
             fetch_text(&format!(
-                "https://raw.githubusercontent.com/Codewithswappy/RareUI/main/{}",
+                "https://raw.githubusercontent.com/Codewithswappy/ShitUI/main/{}",
                 encode_path(&doc.file)
             ))
             .unwrap_or_default()
@@ -961,7 +961,7 @@ fn load_rareui(source: &Source) -> Res<Vec<Object>> {
                         "previewUrl",
                         doc.map_or(Value::Null, |doc| {
                             json!(format!(
-                                "https://rareui.in/docs/{}/{}",
+                                "https://shitui.in/docs/{}/{}",
                                 doc.category, doc.slug
                             ))
                         }),
@@ -975,7 +975,7 @@ fn load_rareui(source: &Source) -> Res<Vec<Object>> {
 
 fn rareui_detail(item: &Object) -> Res<Object> {
     let name = item.get("name").and_then(Value::as_str).unwrap_or("");
-    let source_url = format!("https://rareui.in/r/{}.json", enc(name));
+    let source_url = format!("https://shitui.in/r/{}.json", enc(name));
     let entry = not_null(fetch_json(&source_url)?)?;
     let mut detail = item.clone();
     detail.insert("sourceUrl".into(), json!(source_url));
@@ -1536,7 +1536,7 @@ pub static SOURCES: &[Source] = &[
     registry("kokonut", "Kokonut UI", "registry via GitHub", RegistrySpec { index_url: "https://raw.githubusercontent.com/kokonut-labs/kokonutui/main/public/r/registry.json", item_url: kokonut_item, previews: Previews::Kokonut, enrich: Enrich::None, probe: false }, "MIT"),
     registry("beautifului", "Beautiful UI", "registry", RegistrySpec { index_url: "https://www.beautifului.dev/r/registry.json", item_url: beautiful_item, previews: Previews::Beautiful, enrich: Enrich::Beautiful, probe: false }, "MIT"),
     Source { id: "21st", title: "21st.dev", access: "live API / Markdown", license: None, live: true, kind: Kind::Live21st },
-    Source { id: "rareui", title: "RareUI", access: "registry + repo docs", license: Some("MIT"), live: false, kind: Kind::RareUi },
+    Source { id: "rareui", title: "ShitUI (formerly RareUI)", access: "registry + repo docs", license: Some("MIT"), live: false, kind: Kind::RareUi },
     Source { id: "base-ui", title: "Base UI", access: "llms.txt + npm package", license: None, live: false, kind: Kind::BaseUi },
     Source { id: "radix", title: "Radix Primitives", access: "repo docs + npm package", license: None, live: false, kind: Kind::Radix },
     single("sonner", "Sonner", SinglePackage { package: "sonner", docs: Some("https://sonner.emilkowal.ski"), description: "An opinionated toast notification component for React.", keywords: &["toast", "notification", "alert", "snackbar"], curated: true, unmaintained: false, repo: "emilkowalski/sonner", dir: "src" }),

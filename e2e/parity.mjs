@@ -93,7 +93,7 @@ function fixture(host, url) {
     if (url.endsWith('.json')) return { ...itemBody(url.split('/').pop().replace('.json', '')), description: `Beautiful ${url}` };
     return '<html>';
   }
-  if (host === 'rareui.in') {
+  if (host === 'shitui.in') {
     if (url === '/r/index.json') return { components: ['LiquidButton', 'GlassCard', 'NoDocsWidget', '../bad'] };
     if (url.endsWith('.json')) return itemBody('rare');
     return '<html>';

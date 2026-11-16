@@ -15,7 +15,7 @@ const CASES = [
   ['kokonut', 'carousel cards', 'carousel-cards'],
   ['beautifului', 'loading state', 'loading-state'],
   ['21st', 'carousel', null],
-  ['rareui', 'liquid button', 'LiquidButton'],
+  ['rareui', 'liquid button', 'liquid-button'],
   ['base-ui', 'dialog', 'dialog'],
   ['radix', 'tooltip', 'tooltip'],
   ['sonner', 'toast', 'sonner'],

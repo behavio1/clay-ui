@@ -53,7 +53,7 @@ Every library here was checked before it went in: its license allows passing the
 | Kokonut UI | Modern animated components, including AI chat inputs, on Tailwind and Motion | 116 | MIT | [kokonut-labs/kokonutui](https://github.com/kokonut-labs/kokonutui) | [kokonutui.com](https://kokonutui.com) |
 | 21st.dev | Community marketplace of React and Tailwind components. Downloading code needs `API_KEY_21ST` | live search | set by each author | not public | [21st.dev](https://21st.dev) |
 | Beautiful UI | Interface primitives for AI apps: streaming text, thinking states, approval flows | 27 | MIT | not public | [beautifului.dev](https://www.beautifului.dev) |
-| RareUI | Free animated components. Its registry is offline right now, so it returns nothing | 0 | MIT | [Codewithswappy/RareUI](https://github.com/Codewithswappy/RareUI) | [rareui.in](https://rareui.in) |
+| ShitUI (formerly RareUI) | Free animated components: buttons, tabs, tooltips, 3D book, floating navigation | 15 | MIT | [Codewithswappy/ShitUI](https://github.com/Codewithswappy/ShitUI) | [shitui.in](https://shitui.in) |
 | Sonner | Toast notifications | 1 | MIT | [emilkowalski/sonner](https://github.com/emilkowalski/sonner) | [sonner.emilkowal.ski](https://sonner.emilkowal.ski) |
 | Vaul | Drawer and bottom sheet for mobile web. No longer maintained | 1 | MIT | [emilkowalski/vaul](https://github.com/emilkowalski/vaul) | [vaul.emilkowal.ski](https://vaul.emilkowal.ski) |
 | cmdk | Fast, composable command menu (the Cmd+K palette) | 1 | MIT | [dip/cmdk](https://github.com/dip/cmdk) | none |
