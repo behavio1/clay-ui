@@ -88,3 +88,54 @@ The cards did not pass their claim audit or establish a ranking gain beyond nois
 Restored source evidence and complete examples now confirm a ready base for 83 of 105 positive development needs. That is a known-evidence coverage limit, not proof that the other needs have no solution. Unknown judgments remain unknown. Dev is still not a final-set certificate, and 95% has not been demonstrated.
 
 The optional static catalog transport is prepared with an empty `DEFAULT_CDN_BASE_URL` and an explicit `CLAYUI_CDN_BASE_URL` override. It validates untrusted HTTPS data and falls back to current sources. Delivery support is not a measured relevance improvement; no experimental catalog was uploaded or enabled by default.
+
+
+## Expanded catalog calibration (0.2.1 implementation, local only)
+
+The quality experiment regraded both catalog sizes on one independent overlay:
+1734 intent/component pairs, GPT and Claude in separate blind contexts, with
+480 disagreements adjudicated in fresh contexts. Final numeric coverage is
+1338 pairs; 396 remain unresolved. Weighted kappa between numeric A/B ratings
+is 0.889. Unknowns remain unknown, with conservative and optimistic bounds.
+
+120 English development requests use fixed concise queries and source routing;
+these are retrieval measurements, not a full agent integration test. The
+13-source baseline has 677 unique IDs (678 rows); the 36-source snapshot has
+5826 unique IDs (5827 rows). The replay normalizes one existing duplicate ID in
+both arms. Baseline 0.1.1 and 0.2.0 use identical search algorithms.
+
+| Catalog / policy | No-key Success3@5 | Gemini Success3@5 | Context (both modes after expansion) | Correct rejection no-key / Gemini |
+| --- | ---: | ---: | ---: | ---: |
+| 13-source reference | 64.8% | 69.5% | 53.3% / 55.0% respectively | 6.7% / 20.0% |
+| 36-source unchanged ranker | 81.0% | 79.0% | 73.3% | 0% / 0% |
+| 36-source calibrated | 81.0% | 79.0% | 73.3% | 73.3% / 60.0% |
+
+New sources improve confirmed BM25 Success by 16.2 percentage points (paired
+family 95% CI +2.9 to +30.5). Gemini Success gains 9.5 points (CI -0.9 to
++20.9), so its primary gain is not established beyond noise; its Context gain
+is +18.3 points (CI +6.0 to +33.3). Source expansion alone worsens rejection.
+
+The accepted calibration applies when the **eligible candidate pool exceeds
+678 rows**, regardless of library name. Gemini requires raw cosine >=0.66
+instead of 0.60. BM25 requires the unrounded score to be at least 0.25 times
+the sum of deduplicated expanded query-term IDFs computed over that same pool.
+Small pools retain the reference policy; a uniform higher threshold lost five
+ready matches in scoped Base UI requests. Scores keep their existing scale,
+ordering, curated bonus, gap penalty and display rounding.
+
+Against unchanged expanded retrieval, conservative and optimistic Success and
+Context stay identical. Rejection gains +73.3 points for BM25 (paired CI +40
+to +100) and +60.0 for Gemini (CI +20 to +80). There are only 15 rejection
+requests in three families; these are exploratory dev intervals after 52
+variants, without multiple-comparison correction, not a generalization claim.
+The observed no-loss requirement selects BM25 ratio 0.25 over more aggressive
+ratios that lose ready matches. Remaining unknown top-five items: 98 BM25 (101 before calibration),
+69 Gemini; optimistic Success is 95.2% / 88.6%. We have not demonstrated 95%.
+
+Source caps, code-identity deduplication, examples and availability/metadata
+penalties did not establish a joint gain beyond noise. No source-popularity
+prior or new query-time model/API was added. Missing import and license
+metadata remain non-blocking. Full per-variant bounds, CIs, source/read gaps,
+judgment provenance and acceptance evidence are in
+[the quality report](../experiments/quality-0.2.1/REPORT.md). Original evaluation
+files remain unchanged; no holdout was accessed and no release was published.

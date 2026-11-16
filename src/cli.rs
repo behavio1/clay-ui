@@ -5,7 +5,7 @@ use crate::fsafe::{ensure_real_folder, path_taken, write_no_follow};
 use crate::js::{self, coalesce, template, truthy, Object};
 use crate::net::{self, map_limit, Fail};
 use crate::project::{self, ProjectError};
-use crate::search::{expand_query, rank, rank_semantic, Limits, RANKING};
+use crate::search::{default_ranking, expand_query, rank_default, rank_semantic, Limits};
 use crate::sources::{preview_status, source_by_id, Source, SOURCES};
 use serde_json::{json, Value};
 use std::collections::{HashMap, HashSet};
@@ -742,7 +742,12 @@ fn cmd_search(args: &Args) -> CliResult {
                             Some((id.to_string(), cosine(&query_vector, vectors.get(id)?)))
                         })
                         .collect();
-                    results = Some(rank_semantic(&pool, &similarity, limits, RANKING));
+                    results = Some(rank_semantic(
+                        &pool,
+                        &similarity,
+                        limits,
+                        default_ranking(pool.len()),
+                    ));
                 }
                 Err(error) => warnings.push(format!(
                     "Semantic search unavailable ({error}), used keyword search"
@@ -756,7 +761,7 @@ fn cmd_search(args: &Args) -> CliResult {
         ),
         _ => {}
     }
-    let mut results = results.unwrap_or_else(|| rank(&pool, &query, limits));
+    let mut results = results.unwrap_or_else(|| rank_default(&pool, &query, limits));
     if available_only {
         let mut counts = HashMap::new();
         results.retain(|item| {

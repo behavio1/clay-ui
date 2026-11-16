@@ -294,6 +294,27 @@ async function mockParity() {
 
   const usage = [['frobnicate'], ['add', 'x'], ['search'], ['search', 'x', '--limit', 'abc'], ['search', 'x', '--limit=-1'], ['search', 'x', '--limit=1.5'], ['search', 'x', '--limit=Infinity'], ['search', 'x', '--limit', '-1'], ['search', 'x', '--limit'], ['search', 'x', '--details=-1'], ['search', 'x', '--limit=0x2', '--json'], ['search', 'x', '--limit=1e1', '--json'], ['search', 'x', '--source', 'nope'], ['search', 'x', '--bogus'], ['search', 'x', '-z'], ['search', 'x', '--json=1'], ['search', '--', '--json'], ['show'], ['show', 'nope'], ['show', 'magicui/../x'], ['show', 'magicui/-rf'], ['show', 'zzz/x'], ['show', 'magicui/not-there'], ['show', 'magicui/button', '--project', 'missing'], ['get', 'magicui/not-there'], ['sync', '--source', 'nope'], ['init', '--target', 'nope'], ['--help'], ['-h'], []];
   for (const args of usage) await compare('contract', args, { compareErr: args[0] === undefined || args[0] === '--help' });
+
+  // RUST_ONLY policy: the expanded catalog has calibrated rejection. Keep all
+  // shared small-catalog comparisons above, and assert this deliberate difference.
+  for (const runner of [nodeRunner, rustRunner]) {
+    const file = path.join(runner.cache, 'index.json');
+    const index = JSON.parse(readFileSync(file, 'utf8'));
+    index.sources.shadcn.items = Array.from({ length: 679 }, (_, i) => ({
+      ...index.sources.shadcn.items[0], id: `shadcn/button-${i}`, name: 'button',
+      title: 'Button', description: 'Button', keywords: [],
+    }));
+    writeFileSync(file, JSON.stringify(index));
+  }
+  for (const query of ['button qqqzzz rust native gtk desktop editor spreadsheet', 'button']) {
+    const args = ['search', query, '--source', 'shadcn', '--limit', '5', '--json'];
+    const [node, rust] = await Promise.all([nodeRunner.run(args), rustRunner.run(args)]);
+    assert.equal(node.code, 0);
+    assert.equal(rust.code, 0);
+    assert.ok(JSON.parse(node.out).results.length > 0);
+    assert.equal(JSON.parse(rust.out).results.length, query === 'button' ? 5 : 0);
+    results.passed += 1;
+  }
   } finally { server.close(); }
 }
 

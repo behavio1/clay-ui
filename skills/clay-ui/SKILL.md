@@ -52,6 +52,7 @@ If a need has no good component (trust badges and full order summaries came back
    - `No Gemini key...` or `Semantic search unavailable...`: results come from keywords. Tell the user once.
    - `21st.dev without a key: tag search only`: continue with the available results; mention the limited coverage only if coverage matters.
    - `skipped`: that library was not searched this time. Say coverage is partial if it matters.
+   - A large candidate pool uses a stricter relevance floor. An empty result means this query found no sufficiently supported match; it does not prove the catalog has no solution. Try another short behavior query or an appropriate `--source` search, then inspect the code. Small scoped catalogs retain their previous floor.
 
 2. **Show 2 to 4 distinct options** with what each does for them, its library and its preview link (`previewUrl` may be null). Recommend one for this project. If they said to just pick, pick.
 

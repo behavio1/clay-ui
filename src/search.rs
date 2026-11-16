@@ -1,4 +1,4 @@
-//! Query expansion and ranking over normalized candidates. Constants match the Node version; do not retune.
+//! Query expansion and ranking over normalized candidates, with measured large-catalog rejection.
 
 use crate::js::{self, Object};
 use serde_json::Value;
@@ -176,7 +176,31 @@ fn weighted_terms(candidate: &Object) -> (HashMap<String, f64>, f64) {
 }
 
 /// Offline fallback: BM25 over name, title, keywords and description.
+/// Reference policy retained for fixed-catalog experiments and Node parity.
 pub fn rank(candidates: &[Object], query: &str, limits: Limits) -> Vec<Object> {
+    rank_with_confidence(candidates, query, limits, 0.0)
+}
+
+// The 13-source reference catalog contained 678 rows. A larger eligible pool
+// needs stronger evidence; scoped searches over a small library keep their recall.
+const REFERENCE_CATALOG_SIZE: usize = 678;
+
+/// Default CLI fallback, calibrated on the expanded development catalog.
+pub fn rank_default(candidates: &[Object], query: &str, limits: Limits) -> Vec<Object> {
+    let ratio = if candidates.len() > REFERENCE_CATALOG_SIZE {
+        0.25
+    } else {
+        0.0
+    };
+    rank_with_confidence(candidates, query, limits, ratio)
+}
+
+fn rank_with_confidence(
+    candidates: &[Object],
+    query: &str,
+    limits: Limits,
+    min_idf_ratio: f64,
+) -> Vec<Object> {
     let mut seen = HashSet::new();
     let mut terms = Vec::new();
     for group in expand_query(query) {
@@ -213,6 +237,7 @@ pub fn rank(candidates: &[Object], query: &str, limits: Limits) -> Vec<Object> {
             js::log(1.0 + (total - found + 0.5) / (found + 0.5))
         })
         .collect();
+    let minimum = min_idf_ratio * idf.iter().sum::<f64>();
     let mut ordered: Vec<Scored> = documents
         .iter()
         .map(|(candidate, (counts, length))| {
@@ -224,7 +249,8 @@ pub fn rank(candidates: &[Object], query: &str, limits: Limits) -> Vec<Object> {
             }
             Scored { candidate, score }
         })
-        .filter(|scored| scored.score > 0.0)
+        // Compare before display rounding: a very common exact match can round to 0.
+        .filter(|scored| scored.score > 0.0 && scored.score >= minimum)
         .collect();
     ordered.sort_by(compare);
     select_top(ordered, limits)
@@ -243,6 +269,18 @@ pub const RANKING: Ranking = Ranking {
     curated_bonus: 0.04,
     min_similarity: 0.6,
 };
+
+/// Default raw-cosine floor; the gap penalty and curated bonus remain unchanged.
+pub fn default_ranking(candidate_count: usize) -> Ranking {
+    Ranking {
+        min_similarity: if candidate_count > REFERENCE_CATALOG_SIZE {
+            0.66
+        } else {
+            RANKING.min_similarity
+        },
+        ..RANKING
+    }
+}
 
 // Gaps that stop the code from being downloaded. Cosmetic gaps never affect order.
 const CODE_BLOCKING: [&str; 3] = ["needs-key", "pro-only", "no-source-listing"];
@@ -286,4 +324,74 @@ pub fn rank_semantic(
         .collect();
     ordered.sort_by(compare);
     select_top(ordered, limits)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    fn catalog(count: usize, name: &str) -> Vec<Object> {
+        (0..count)
+            .map(|i| {
+                json!({"id": format!("test/{i}"), "source": "test", "name": name})
+                    .as_object()
+                    .unwrap()
+                    .clone()
+            })
+            .collect()
+    }
+
+    #[test]
+    fn large_keyword_pool_requires_query_support_but_small_pool_keeps_recall() {
+        let query = "button qqqzzz rust native gtk desktop editor spreadsheet";
+        let small = catalog(678, "button");
+        let large = catalog(679, "button");
+        assert!(!rank_default(&small, query, Limits::default()).is_empty());
+        assert!(!rank(&large, query, Limits::default()).is_empty());
+        assert!(rank_default(&large, query, Limits::default()).is_empty());
+        assert!(!rank_default(&large, "button", Limits::default()).is_empty());
+    }
+
+    #[test]
+    fn keyword_confidence_uses_unrounded_score() {
+        let candidates = catalog(4000, "button");
+        let result = rank_default(&candidates, "button", Limits::default());
+        assert_eq!(result.len(), 5);
+        assert_eq!(result[0]["score"], 0.0);
+    }
+
+    #[test]
+    fn empty_keyword_queries_and_documents_stay_empty() {
+        let candidates = catalog(679, "button");
+        for query in ["", "the and of", "qqqzzz"] {
+            assert!(rank_default(&candidates, query, Limits::default()).is_empty());
+        }
+        assert!(rank_default(&[], "button", Limits::default()).is_empty());
+    }
+
+    #[test]
+    fn semantic_floor_depends_on_eligible_pool_and_precedes_bonus() {
+        let mut candidates = catalog(679, "button");
+        candidates[0].insert("curated".into(), json!(true));
+        let scores = HashMap::from([("test/0".into(), 0.65), ("test/1".into(), 0.66)]);
+        let small = rank_semantic(
+            &candidates[..678],
+            &scores,
+            Limits::default(),
+            default_ranking(678),
+        );
+        assert_eq!(small[0]["id"], "test/0");
+        let large = rank_semantic(
+            &candidates,
+            &scores,
+            Limits::default(),
+            default_ranking(679),
+        );
+        assert_eq!(large.len(), 1);
+        assert_eq!(large[0]["id"], "test/1");
+        assert_eq!(default_ranking(37).min_similarity, 0.6);
+        assert_eq!(default_ranking(679).curated_bonus, RANKING.curated_bonus);
+        assert_eq!(default_ranking(679).gap_penalty, RANKING.gap_penalty);
+    }
 }
