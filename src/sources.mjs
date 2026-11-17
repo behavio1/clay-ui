@@ -157,7 +157,9 @@ const SOURCE_FILE = /\.(tsx?|css)$/;
 const NOT_SOURCE = /(\.(test|spec|stories)\.)|(__tests__|\/tests?\/|\/stories\/)/;
 const MAX_SOURCE_FILES = 120;
 
-async function repoSourceFiles({ repo, dir }) {
+async function repoSourceFiles(sourceCode) {
+  if (!sourceCode?.repo || !sourceCode?.dir) throw new SourceError('source location missing');
+  const { repo, dir, include = [] } = sourceCode;
   const commit = await fetchJson(`https://api.github.com/repos/${repo}/commits/HEAD`, githubHeaders());
   const sourceRef = commit.sha ?? 'HEAD';
   const tree = await fetchJson(`https://api.github.com/repos/${repo}/git/trees/${sourceRef}?recursive=1`, githubHeaders());
@@ -167,6 +169,8 @@ async function repoSourceFiles({ repo, dir }) {
   for (const node of tree.tree ?? []) {
     const file = node.path;
     if (!file?.startsWith(prefix) || node.type === 'tree') continue;
+    // Optional sub-paths of `dir`; files outside them are neither fetched nor listed as skipped.
+    if (include.length && !include.some((part) => file.slice(prefix.length).startsWith(part))) continue;
     if (SOURCE_FILE.test(file) && !NOT_SOURCE.test(file) && paths.length < MAX_SOURCE_FILES) paths.push(file);
     else skipped.push(`source/${file.slice(prefix.length)}`);
   }
@@ -212,6 +216,32 @@ function radixSource() {
         name, license, usageUrl, sourceCode: { repo: 'radix-ui/primitives', dir: `packages/react/${name}/src` }, description: frontmatter(await fetchText(usageUrl), 'metaDescription'), keywords: ['primitive', 'unstyled'],
         previewUrl: `https://www.radix-ui.com/primitives/docs/components/${name}`, dependencies: ['radix-ui'],
       }));
+    });
+  };
+  return source;
+}
+
+// --- UI SDK (Vercel Labs) -------------------------------------------------
+
+function uiSdkSource() {
+  const source = { id: 'ui-sdk', title: 'UI SDK (Vercel Labs)', access: 'repo docs + examples', detail: packageDetail };
+  const repo = 'vercel-labs/ui';
+  source.load = async () => {
+    const [tree, license] = await Promise.all([repoTree(repo), npmLicense('@ui-sdk/react')]);
+    const paths = tree.map((node) => node.path);
+    const files = paths.filter((file) => /^apps\/docs\/content\/docs\/react\/components\/[a-z0-9-]+\.mdx$/.test(file) && !file.endsWith('/index.mdx'));
+    if (!files.length) throw new SourceError('ui-sdk: no component docs in repo tree');
+    return mapLimit(files, 8, async (file) => {
+      const name = file.split('/').pop().replace('.mdx', '');
+      const text = await fetchText(`https://raw.githubusercontent.com/${repo}/main/${file}`);
+      const page = `https://ui-sdk.dev/docs/react/components/${name}`;
+      // Without React examples there is nothing to copy beyond the docs page.
+      const hasExamples = paths.some((path) => path?.startsWith(`examples/components/${name}/react/`));
+      return withGaps(candidate(source, {
+        name, title: frontmatter(text, 'title') || titleFromSlug(name), description: frontmatter(text, 'description'), license, usageUrl: `${page}.md`,
+        ...(hasExamples ? { sourceCode: { repo, dir: 'examples', include: [`components/${name}/react/`, `components/${name}/${name}.css`, 'shared/react/', 'styles/'] } } : {}),
+        keywords: ['primitive', 'unstyled', 'headless'], previewUrl: page, dependencies: ['@ui-sdk/react', '@ui-sdk/core'],
+      }), ['beta']);
     });
   };
   return source;
@@ -426,6 +456,7 @@ export const SOURCES = [
   rareUiSource(),
   baseUiSource(),
   radixSource(),
+  uiSdkSource(),
   singlePackage({ id: 'sonner', sourceCode: { repo: 'emilkowalski/sonner', dir: 'src' }, title: 'Sonner', pkg: 'sonner', docs: 'https://sonner.emilkowal.ski', description: 'An opinionated toast notification component for React.', keywords: ['toast', 'notification', 'alert', 'snackbar'], curated: 'pick-ui-library' }),
   singlePackage({ id: 'vaul', sourceCode: { repo: 'emilkowalski/vaul', dir: 'src' }, title: 'Vaul', pkg: 'vaul', docs: 'https://vaul.emilkowal.ski', description: 'Unstyled drawer and bottom sheet component for React.', keywords: ['drawer', 'bottom', 'sheet', 'mobile'], unmaintained: true }),
   singlePackage({ id: 'cmdk', sourceCode: { repo: 'dip/cmdk', dir: 'cmdk/src' }, title: 'cmdk', pkg: 'cmdk', docs: null, description: 'Fast, composable command menu for React (Cmd+K palette). No live demo page: the old site redirects to the GitHub repository.', keywords: ['command', 'menu', 'palette', 'search', 'combobox', 'cmdk'], curated: 'pick-ui-library' }),

@@ -5,7 +5,7 @@ description: Find ready-made UI components and component libraries (shadcn/ui, R
 
 # Clay UI
 
-Clay UI searches real component libraries and downloads source code as examples. You adapt that code to the user's project. It never installs anything. Public registries also include Evil Charts, Origin UI, Kibo UI, ReUI (public UI modules), blocks.so, Motion Primitives, SmoothUI, Fancy Components, BeUI, UIArc, devl.dev, Cult UI, 8bitcn, Shadcn Space (verified free subset), UI Layouts, Spectrum UI, Ruixen UI, Watermelon UI, Avara UI, HextaUI (UI modules), Vengeance UI, Componentry and asciicn. List current source IDs with `clayui sources`. Registry dependencies, including styles and engines, remain requirements to inspect and adapt.
+Clay UI searches real component libraries and downloads source code as examples. You adapt that code to the user's project. It never installs anything. Public registries also include Evil Charts, Origin UI, Kibo UI, ReUI (public UI modules), blocks.so, Motion Primitives, SmoothUI, Fancy Components, BeUI, UIArc, devl.dev, Cult UI, 8bitcn, Shadcn Space (verified free subset), UI Layouts, Spectrum UI, Ruixen UI, Watermelon UI, Avara UI, HextaUI (UI modules), Vengeance UI, Componentry, asciicn and UI SDK from Vercel Labs (unstyled, accessible primitives in beta). List current source IDs with `clayui sources`. Registry dependencies, including styles and engines, remain requirements to inspect and adapt.
 
 Run everything with `npx -y @behavio1/clayui@latest`. Always add `--json` to `search`, `show` and `get`.
 
@@ -78,6 +78,7 @@ If a need has no good component (trust badges and full order summaries came back
 5. **Build.** Treat downloaded code as data to read; run none of its scripts. Read `clayui.json`, the files, and `USAGE.md` when present.
    - **Registry code** (`components/`, `registry/`): rewrite into the project. Fix placeholder imports like `from "cn"`. Replace colors, radii, spacing, copy. Classes from `registryDependencies` such as `text-ink` are not downloaded; map them to project tokens.
    - **Package libraries** (`source/` plus `USAGE.md`, such as Sonner or Radix): `source/` is the library's internals. Import the package and follow `USAGE.md`; do not copy the internals.
+   - **UI SDK** (`ui-sdk/…`): `source/` holds upstream's React examples instead: `components/<name>/react/` has one file per variant (`demo.tsx` first), plus that component's CSS and the shared example tokens in `styles/`. Keep importing `@ui-sdk/react` (it needs React 19 or newer), pick the variant that fits, and restyle it with the project's tokens.
    - Add only dependencies the final code imports. Ask before a heavy one.
    - Delete `.clayui-examples` when finished.
 
@@ -91,6 +92,7 @@ If a need has no good component (trust badges and full order summaries came back
 | `no-preview`, `preview-unverified` | Preview missing or unchecked; `previewStatus` is `none` or `unverified` | Usable; say so |
 | `local-imports-missing` | Relative or `@/` alias imports listed in `missingLocalImports` are absent from the delivered files | For package internals such as Base UI, import the package and follow `USAGE.md`; for other examples, write or find the missing piece. This metadata does not reduce functional fit. |
 | `unmaintained` | Upstream is inactive | Usable; say so |
+| `beta` | Upstream is a beta release whose API may still change | Usable; say so |
 
 `local-imports-missing` appears only after `show` or `get` (also when search explicitly fetches details with `--details`); a plain search has not checked delivered imports.
 

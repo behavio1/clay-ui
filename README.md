@@ -33,7 +33,7 @@ npx skills add behavio1/clay-ui
 ![How Clay UI works: you ask, your agent reads the need, Clay UI searches a local index, you pick a variant, Clay UI downloads the source from the original library, and your agent shapes it into your project](https://raw.githubusercontent.com/behavio1/clay-ui/main/docs/images/how-clay-ui-works.jpg)
 
 1. **You describe it.** Tell your agent what you need.
-2. **Clay UI searches.** It looks through the [36 libraries below](#libraries) in a local index on your machine.
+2. **Clay UI searches.** It looks through the [37 libraries below](#libraries) in a local index on your machine.
 3. **You pick a variant.** Your agent shows the best matches with preview links.
 4. **Your agent shapes it.** The source lands in a local folder as an example. Your agent rewrites it to fit your stack, tokens and style.
 
@@ -48,6 +48,7 @@ Every library here was checked before it went in: its license allows passing the
 | shadcn/ui | Accessible base components on Radix and Tailwind: buttons, dialogs, forms, tables, charts | 65 | MIT | [shadcn-ui/ui](https://github.com/shadcn-ui/ui) | [ui.shadcn.com](https://ui.shadcn.com) |
 | Radix Primitives | Unstyled, accessible primitives with full keyboard support: dialog, popover, menu, tabs | 30 | MIT | [radix-ui/primitives](https://github.com/radix-ui/primitives) | [radix-ui.com](https://www.radix-ui.com) |
 | Base UI | Unstyled, accessible components from the makers of Radix, Floating UI and Material UI | 37 | MIT | [mui/base-ui](https://github.com/mui/base-ui) | [base-ui.com](https://base-ui.com) |
+| UI SDK | Vercel Labs' unstyled components built from shared behaviors: combobox, date picker, color picker, menus, dialogs. You get the React examples of every variant. In beta | 55 | Apache-2.0 | [vercel-labs/ui](https://github.com/vercel-labs/ui) | [ui-sdk.dev](https://ui-sdk.dev) |
 | Magic UI | Animated landing page components: marquees, number tickers, shimmer buttons, bento grids | 79 | MIT | [magicuidesign/magicui](https://github.com/magicuidesign/magicui) | [magicui.design](https://magicui.design) |
 | Aceternity UI | Eye-catching animated effects and sections for hero areas and marketing pages | 320 | Aceternity license | not public | [ui.aceternity.com](https://ui.aceternity.com) |
 | Kokonut UI | Modern animated components, including AI chat inputs, on Tailwind and Motion | 116 | MIT | [kokonut-labs/kokonutui](https://github.com/kokonut-labs/kokonutui) | [kokonutui.com](https://kokonutui.com) |

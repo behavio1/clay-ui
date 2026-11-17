@@ -36,4 +36,8 @@ Source LICENSE files were read and fingerprinted in `experiments/new-sources/lic
 
 `THIRD_PARTY_NOTICES.md` and its generator concern linked Cargo dependencies. These integrations add source URLs and metadata, with no bundled upstream component code or new Cargo dependencies, so those generated notices are unchanged.
 
+## UI SDK
+
+`ui-sdk` indexes [UI SDK](https://ui-sdk.dev) from Vercel Labs ([Apache-2.0](https://github.com/vercel-labs/ui/blob/HEAD/LICENSE), license read from the `@ui-sdk/react` npm package). The catalog is the React component docs in `apps/docs/content/docs/react/components/`, one entry per page, with title and description from its frontmatter. `get` downloads, pinned to the current commit, the component's React examples (`examples/components/<name>/react/`, one file per variant), its CSS and the shared example styles and helpers, plus the docs page as `USAGE.md`. The examples import `@ui-sdk/react`, which stays a dependency. A component without React examples (currently `time-input`) has only usage documentation, so `get` exits 3 for it. Every entry carries the `beta` gap while upstream is in beta.
+
 Loader-specific sources (HeroUI, Headless UI, Tremor, HyperUI, TailGrids, Bencho, EasyUI, Animata, Feral UI and Tailark) remain deferred in this change; see the integration report for individual reasons.

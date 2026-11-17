@@ -595,6 +595,13 @@ fn repo_source_files(source_code: &Value) -> Res<RepoFiles> {
             .ok_or_else(|| Fail::other("source location missing"))
     };
     let (repo, dir) = (text_of("repo")?, text_of("dir")?);
+    // Optional sub-paths of `dir`; files outside them are neither fetched nor listed as skipped.
+    let include: Vec<&str> = source_code
+        .get("include")
+        .and_then(Value::as_array)
+        .map_or(Vec::new(), |parts| {
+            parts.iter().filter_map(Value::as_str).collect()
+        });
     let commit = fetch_json_with(
         &format!("https://api.github.com/repos/{repo}/commits/HEAD"),
         &github_headers(),
@@ -624,6 +631,10 @@ fn repo_source_files(source_code: &Value) -> Res<RepoFiles> {
             continue;
         };
         if !file.starts_with(&prefix) || node.get("type").and_then(Value::as_str) == Some("tree") {
+            continue;
+        }
+        let relative = &file[prefix.len()..];
+        if !include.is_empty() && !include.iter().any(|part| relative.starts_with(part)) {
             continue;
         }
         if is_source_file(file) && !is_excluded_file(file) && paths.len() < MAX_SOURCE_FILES {
@@ -876,6 +887,77 @@ fn load_base_ui(source: &Source) -> Res<Vec<Object>> {
         items.push(with_gaps(candidate(source, fields), &[]));
     }
     Ok(items)
+}
+
+// --- UI SDK (Vercel Labs) -------------------------------------------------
+
+const UI_SDK_REPO: &str = "vercel-labs/ui";
+
+fn ui_sdk_name(path: &str) -> Option<&str> {
+    let name = path
+        .strip_prefix("apps/docs/content/docs/react/components/")?
+        .strip_suffix(".mdx")?;
+    (!name.is_empty()
+        && name != "index"
+        && name
+            .chars()
+            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-'))
+    .then_some(name)
+}
+
+/// The React examples of one component, with their CSS and the shared example styles.
+fn ui_sdk_source(name: &str) -> Value {
+    json!({
+        "repo": UI_SDK_REPO,
+        "dir": "examples",
+        "include": [
+            format!("components/{name}/react/"),
+            format!("components/{name}/{name}.css"),
+            "shared/react/",
+            "styles/",
+        ],
+    })
+}
+
+fn load_ui_sdk(source: &Source) -> Res<Vec<Object>> {
+    let (tree, license) = join(|| repo_tree(UI_SDK_REPO), || npm_license("@ui-sdk/react"));
+    let (tree, license) = (tree?, license?);
+    let files: Vec<&String> = tree
+        .iter()
+        .filter(|file| ui_sdk_name(file).is_some())
+        .collect();
+    if files.is_empty() {
+        return Err(Fail::source("ui-sdk: no component docs in repo tree"));
+    }
+    map_limit(&files, CONCURRENCY, |file| {
+        let name = ui_sdk_name(file).unwrap_or("");
+        let text = fetch_text(&format!(
+            "https://raw.githubusercontent.com/{UI_SDK_REPO}/main/{}",
+            encode_path(file)
+        ))?;
+        let title = Some(frontmatter(&text, "title"))
+            .filter(|title| !title.is_empty())
+            .unwrap_or_else(|| title_from_slug(name));
+        let page = format!("https://ui-sdk.dev/docs/react/components/{name}");
+        let mut fields = vec![
+            ("name", json!(name)),
+            ("title", json!(title)),
+            ("description", json!(frontmatter(&text, "description"))),
+            ("license", license.clone()),
+            ("usageUrl", json!(format!("{page}.md"))),
+        ];
+        // Without React examples there is nothing to copy beyond the docs page.
+        let examples = format!("examples/components/{name}/react/");
+        if tree.iter().any(|path| path.starts_with(&examples)) {
+            fields.push(("sourceCode", ui_sdk_source(name)));
+        }
+        fields.extend([
+            ("keywords", json!(["primitive", "unstyled", "headless"])),
+            ("previewUrl", json!(page)),
+            ("dependencies", json!(["@ui-sdk/react", "@ui-sdk/core"])),
+        ]);
+        Ok(with_gaps(candidate(source, fields), &["beta"]))
+    })
 }
 
 // --- RareUI ---------------------------------------------------------------
@@ -1376,6 +1458,7 @@ pub enum Kind {
     Single(SinglePackage),
     Radix,
     BaseUi,
+    UiSdk,
     RareUi,
     Live21st,
 }
@@ -1435,6 +1518,7 @@ impl Source {
             Kind::Single(spec) => load_single(self, spec),
             Kind::Radix => load_radix(self),
             Kind::BaseUi => load_base_ui(self),
+            Kind::UiSdk => load_ui_sdk(self),
             Kind::RareUi => load_rareui(self),
             Kind::Live21st => Ok(Vec::new()),
         }
@@ -1448,7 +1532,7 @@ impl Source {
             }
             Kind::Registry(spec) => registry_detail(spec, item),
             Kind::Community(spec) => community::detail(spec, item),
-            Kind::Single(_) | Kind::Radix | Kind::BaseUi => package_detail(item),
+            Kind::Single(_) | Kind::Radix | Kind::BaseUi | Kind::UiSdk => package_detail(item),
             Kind::RareUi => rareui_detail(item),
             Kind::Live21st => {
                 let mut parts = name.split('/');
@@ -1539,6 +1623,7 @@ pub static SOURCES: &[Source] = &[
     Source { id: "rareui", title: "ShitUI (formerly RareUI)", access: "registry + repo docs", license: Some("MIT"), live: false, kind: Kind::RareUi },
     Source { id: "base-ui", title: "Base UI", access: "llms.txt + npm package", license: None, live: false, kind: Kind::BaseUi },
     Source { id: "radix", title: "Radix Primitives", access: "repo docs + npm package", license: None, live: false, kind: Kind::Radix },
+    Source { id: "ui-sdk", title: "UI SDK (Vercel Labs)", access: "repo docs + examples", license: None, live: false, kind: Kind::UiSdk },
     single("sonner", "Sonner", SinglePackage { package: "sonner", docs: Some("https://sonner.emilkowal.ski"), description: "An opinionated toast notification component for React.", keywords: &["toast", "notification", "alert", "snackbar"], curated: true, unmaintained: false, repo: "emilkowalski/sonner", dir: "src" }),
     single("vaul", "Vaul", SinglePackage { package: "vaul", docs: Some("https://vaul.emilkowal.ski"), description: "Unstyled drawer and bottom sheet component for React.", keywords: &["drawer", "bottom", "sheet", "mobile"], curated: false, unmaintained: true, repo: "emilkowalski/vaul", dir: "src" }),
     single("cmdk", "cmdk", SinglePackage { package: "cmdk", docs: None, description: "Fast, composable command menu for React (Cmd+K palette). No live demo page: the old site redirects to the GitHub repository.", keywords: &["command", "menu", "palette", "search", "combobox", "cmdk"], curated: true, unmaintained: false, repo: "dip/cmdk", dir: "cmdk/src" }),

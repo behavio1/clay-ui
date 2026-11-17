@@ -2367,3 +2367,105 @@ fn origin_numeric_compositions_use_upstream_tags_and_keep_their_ids() {
     assert_eq!(entry["title"], "Dropdown, Checkbox (comp-371)");
     assert_eq!(entry["example"], true);
 }
+
+#[test]
+fn ui_sdk_indexes_react_docs_and_downloads_only_the_component_examples() {
+    let tree = json!({"tree":[
+        {"path":"apps/docs/content/docs/react/components/index.mdx", "type":"blob"},
+        {"path":"apps/docs/content/docs/react/components/combobox.mdx", "type":"blob"},
+        {"path":"apps/docs/content/docs/react/components/time-input.mdx", "type":"blob"},
+        {"path":"apps/docs/content/docs/vue/components/combobox.mdx", "type":"blob"},
+        {"path":"examples/components/combobox/combobox.css", "type":"blob"},
+        {"path":"examples/components/combobox/react/demo.tsx", "type":"blob"},
+        {"path":"examples/components/combobox/solid/demo.tsx", "type":"blob"},
+        {"path":"examples/components/listbox/react/demo.tsx", "type":"blob"},
+        {"path":"examples/shared/react/log.ts", "type":"blob"},
+        {"path":"examples/shared/solid/log.ts", "type":"blob"},
+        {"path":"examples/styles/tokens.css", "type":"blob"}
+    ]});
+    let server = mock(move |call| {
+        if call.path.contains("registry.npmjs.org") {
+            return ok(json!({"license":"Apache-2.0"}).to_string());
+        }
+        if call.path.contains("/commits/HEAD") {
+            return ok(json!({"sha":"c0ffee"}).to_string());
+        }
+        if call.path.contains("/git/trees/") {
+            return ok(tree.to_string());
+        }
+        if call.path.contains("/combobox.mdx") {
+            return ok("---\ntitle: Combobox\ndescription: Search a list of options.\n---\n");
+        }
+        if call.path.contains(".mdx") {
+            return ok("---\ntitle: Time Input\n---\n");
+        }
+        if call.path.contains("ui-sdk.dev") {
+            return ok("# Combobox usage\n");
+        }
+        if call.path.contains("raw.githubusercontent") {
+            return ok("export const x = 1;\n");
+        }
+        Reply::Respond(404, "unexpected URL".into())
+    });
+    let cache = temp();
+    let synced = cli(&["sync", "--source", "ui-sdk", "--json"], &server, &cache);
+    assert_eq!(synced.code, 0, "{}", synced.err);
+    let items = read_json(cache.join("index.json"))["sources"]["ui-sdk"]["items"].clone();
+    let names: Vec<&str> = items
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|item| item["name"].as_str().unwrap())
+        .collect();
+    assert_eq!(names, vec!["combobox", "time-input"]);
+    assert_eq!(items[0]["description"], "Search a list of options.");
+    assert_eq!(items[0]["license"], "Apache-2.0");
+    assert_eq!(items[0]["gaps"], json!(["beta"]));
+    assert!(items[1].get("sourceCode").is_none());
+
+    let out = temp();
+    let got = cli(
+        &[
+            "get",
+            "ui-sdk/combobox",
+            "--json",
+            "--out",
+            out.to_str().unwrap(),
+        ],
+        &server,
+        &cache,
+    );
+    assert_eq!(got.code, 0, "{}", got.err);
+    let meta = read_json(out.join("ui-sdk/combobox/clayui.json"));
+    let mut files: Vec<&str> = meta["files"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|file| file.as_str().unwrap())
+        .collect();
+    files.sort_unstable();
+    assert_eq!(
+        files,
+        vec![
+            "USAGE.md",
+            "source/components/combobox/combobox.css",
+            "source/components/combobox/react/demo.tsx",
+            "source/shared/react/log.ts",
+            "source/styles/tokens.css",
+        ]
+    );
+    assert_eq!(meta["skipped"], json!([]));
+
+    let usage_only = cli(
+        &[
+            "get",
+            "ui-sdk/time-input",
+            "--json",
+            "--out",
+            out.to_str().unwrap(),
+        ],
+        &server,
+        &cache,
+    );
+    assert_eq!(usage_only.code, 3, "{}", usage_only.out);
+}

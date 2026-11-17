@@ -73,12 +73,14 @@ function fixture(host, url) {
     if (url === '/kokonut-labs/kokonutui/main/public/r/registry.json') return { items: NAMES.map((name) => registryItem(name)) };
     if (url.startsWith('/kokonut-labs/')) return itemBody(url.split('/').pop().replace('.json', ''));
     if (url.startsWith('/Codewithswappy/')) return `---\ntitle: 'Rare ${decodeURIComponent(url.split('/').pop())}'\ndescription: A rare component\n---\n`;
+    if (url.startsWith('/vercel-labs/ui/main/apps/')) return url.includes('time-input') ? '---\ndescription: UI SDK time input\n---\n' : '---\ntitle: "Dialog"\ndescription: UI SDK dialog primitive\n---\n';
     if (url.startsWith('/radix-ui/website/')) return `---\nmetaDescription: Radix ${url.split('/').pop().replace('.mdx', '')} primitive\n---\n# x`;
     if (url.includes('/HEAD/')) return url.includes('broken') ? 500 : `export const file = ${JSON.stringify(url)};`;
   }
   if (full.startsWith('api.github.com/repos/')) {
     if (url.includes('kokonut-labs')) return tree(['content/docs/components/dialog.mdx', 'content/docs/blocks/data-table.mdx', 'content/other.mdx']);
     if (url.includes('Codewithswappy')) return tree(['content/docs/buttons/liquid-button.mdx', 'content/docs/ui/glass-card.mdx']);
+    if (url.includes('vercel-labs/ui')) return tree(['apps/docs/content/docs/react/components/dialog.mdx', 'apps/docs/content/docs/react/components/index.mdx', 'apps/docs/content/docs/react/components/time-input.mdx', 'examples/components/dialog/react/demo.tsx', 'examples/components/dialog/dialog.css', 'examples/components/dialog/solid/demo.tsx', 'examples/styles/tokens.css', 'README.md']);
     if (url.includes('radix-ui/website')) return tree(['data/primitives/docs/components/dialog.mdx', 'data/primitives/docs/components/tooltip.mdx', 'data/primitives/docs/components/tabs.mdx', 'data/primitives/docs/other/x.mdx']);
     const code = (dir) => tree([`${dir}/index.tsx`, `${dir}/style.css`, `${dir}/a.test.tsx`, `${dir}/__tests__/b.tsx`, `${dir}/sub/c.ts`, 'README.md']);
     if (url.includes('radix-ui/primitives')) return code('packages/react/dialog/src');
@@ -98,6 +100,7 @@ function fixture(host, url) {
     if (url.endsWith('.json')) return itemBody('rare');
     return '<html>';
   }
+  if (host === 'ui-sdk.dev') return url.endsWith('.md') ? `# Usage of ${url}` : url.includes('time-input') ? 404 : '<html>';
   if (host === 'base-ui.com') return url === '/llms.txt' ? llms : url.endsWith('.md') ? `# Usage of ${url}` : '<html>';
   if (host === 'registry.npmjs.org') return url.includes('vaul') ? { license: { type: 'MIT' } } : { license: 'MIT' };
   if (host === 'unpkg.com') return url.includes('sonner') ? 500 : `# README of ${url}`;
@@ -251,7 +254,7 @@ async function mockParity() {
   }
 
   const queries = ['dialog', 'carousel cards', 'data table with filters', 'toast notification', 'modal', 'loading state', 'aurora background', 'liquid button', 'primitive', 'animated number counter', 'command palette', 'bottom sheet', 'the and of', 'qqqzzz', 'Żółć dialog'];
-  const sources = ['', 'shadcn', 'magicui', 'aceternity', 'kokonut', 'beautifului', '21st', 'rareui', 'base-ui', 'radix', 'sonner', 'vaul', 'cmdk', 'number-flow'];
+  const sources = ['', 'shadcn', 'magicui', 'aceternity', 'kokonut', 'beautifului', '21st', 'rareui', 'base-ui', 'radix', 'ui-sdk', 'sonner', 'vaul', 'cmdk', 'number-flow'];
   for (const [mode, env] of [['bm25', {}], ['semantic', { GEMINI_API_KEY: 'mock-gemini-key-value' }], ['with-21st-key', { GEMINI_API_KEY: 'mock-gemini-key-value', API_KEY_21ST: 'mock-21st-key-value' }]]) {
     for (const query of queries) {
       for (const source of sources) await compare(mode, ['search', query, ...(source ? ['--source', source] : []), '--limit', '50', '--json'], { env });
@@ -268,7 +271,7 @@ async function mockParity() {
   assert.deepEqual(rustVectors, nodeVectors, 'vector cache values differ');
   results.passed += 2;
 
-  const ids = ['shadcn/dialog', 'shadcn/tooltip', 'shadcn/drawer', 'magicui/button', 'aceternity/carousel', 'aceternity/marquee', 'kokonut/dialog', 'beautifului/tabs', 'rareui/LiquidButton', 'base-ui/dialog', 'radix/dialog', 'sonner/sonner', 'vaul/vaul', 'cmdk/cmdk', 'number-flow/number-flow', '21st/alice/hero-carousel', '21st/bob/card-slider'];
+  const ids = ['shadcn/dialog', 'shadcn/tooltip', 'shadcn/drawer', 'magicui/button', 'aceternity/carousel', 'aceternity/marquee', 'kokonut/dialog', 'beautifului/tabs', 'rareui/LiquidButton', 'base-ui/dialog', 'radix/dialog', 'ui-sdk/dialog', 'ui-sdk/time-input', 'sonner/sonner', 'vaul/vaul', 'cmdk/cmdk', 'number-flow/number-flow', '21st/alice/hero-carousel', '21st/bob/card-slider'];
   writeFileSync(path.join(nodeRunner.cwd, 'package.json'), '{"dependencies":{"react":"19"},"devDependencies":{"tailwindcss":"4"}}');
   writeFileSync(path.join(rustRunner.cwd, 'package.json'), '{"dependencies":{"react":"19"},"devDependencies":{"tailwindcss":"4"}}');
   for (const env of [{}, { API_KEY_21ST: 'mock-21st-key-value' }]) {

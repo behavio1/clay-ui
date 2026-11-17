@@ -18,6 +18,7 @@ const CASES = [
   ['rareui', 'liquid button', 'liquid-button'],
   ['base-ui', 'dialog', 'dialog'],
   ['radix', 'tooltip', 'tooltip'],
+  ['ui-sdk', 'combobox', 'combobox'],
   ['sonner', 'toast', 'sonner'],
   ['vaul', 'drawer', 'vaul'],
   ['cmdk', 'command menu', 'cmdk'],
