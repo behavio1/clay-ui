@@ -163,6 +163,10 @@ Component downloads are fresh for 7 days. On upstream failure, a cached copy up 
 - No Gemini key: keyword search is normal. The env-file option `CLAYUI_GEMINI_ENV_FILE` requires a line beginning exactly `GOOGLE_API_KEY=`.
 - Check `clayui --version`; use a writable `CLAYUI_CACHE_DIR` if the home cache is read-only.
 
+## No cryptocurrency
+
+Clay UI has no token or coin. Any coin that uses the Clay UI name is not ours: we did not create, endorse or promote it, and we have received no tokens, payment or allocation from anyone. We will not endorse any token.
+
 ## License
 
 MIT for Clay UI itself. Downloaded components keep the terms set by their authors.
