@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 import { missingLocalImports } from '../src/imports.mjs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import { agentInstructionPath, deliverableFiles, findAgentInstruction, inspectProject, missingDependencies, safeRelative, unverifiedDependencies, UsageError } from '../src/project.mjs';
+import { agentInstructionPath, deliverableFiles, dependenciesFor, findAgentInstruction, inspectProject, safeRelative, UsageError } from '../src/project.mjs';
 import { VectorStore, cosine, embedQuery, readKey } from '../src/embeddings.mjs';
 import { expandQuery, rank, rankSemantic } from '../src/search.mjs';
 import { SOURCES, previewStatus, sourceById, searchLicense } from '../src/sources.mjs';
@@ -288,14 +288,18 @@ async function cmdShow({ values, positionals }) {
   const project = values.project ? inspectProject(values.project) : null;
   const detail = await loadDetail(positionals[0]);
   const observed = cleanDescription(withObservedGaps(detail, await previewStatus(detail.source, detail.previewUrl)));
-  const output = { ...(values.code ? observed : withoutCode(observed)), project: project && { react: project.react, tailwind: project.tailwind, missingDependencies: missingDependencies(detail, project), unverifiedDependencies: unverifiedDependencies(detail) } };
+  const dependencies = project && dependenciesFor(detail, project);
+  const output = { ...(values.code ? observed : withoutCode(observed)), project: project && { react: project.react, tailwind: project.tailwind, missingDependencies: dependencies.missing, unverifiedDependencies: dependencies.unverified } };
   if (values.json) return console.log(JSON.stringify(output, null, 2));
   console.log(`${output.id}\n${output.title}${output.description ? ` — ${output.description}` : ''}`);
   console.log(`preview: ${output.previewUrl ?? 'none'} (${output.previewStatus})`);
   console.log(`license:   ${output.license ?? 'unknown'}${output.licenseAssumed ? ' (assumed)' : ''}`);
   console.log(`gaps:      ${output.gaps.join(', ') || 'none'}`);
   printFiles(output, values.code);
-  if (output.project) console.log(`projekt:   ${JSON.stringify(output.project)}`);
+  if (output.project) {
+    const { unverifiedDependencies, ...shown } = output.project;
+    console.log(`projekt:   ${JSON.stringify(unverifiedDependencies.length ? output.project : shown)}`);
+  }
 }
 
 // Creates each folder below base, refusing symlinks so a write can never leave the example folder.

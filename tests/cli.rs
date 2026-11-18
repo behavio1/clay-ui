@@ -53,6 +53,7 @@ struct Call {
 enum Reply {
     Respond(u16, String),
     Redirect(String),
+    SlowRedirect(String),
     Hang,
 }
 
@@ -103,6 +104,13 @@ fn serve(mut stream: TcpStream, handler: &Handler, calls: &Mutex<Vec<Call>>) -> 
     calls.lock().unwrap().push(call.clone());
     match handler(&call) {
         Reply::Hang => std::thread::sleep(Duration::from_secs(5)),
+        Reply::SlowRedirect(location) => {
+            std::thread::sleep(Duration::from_millis(200));
+            let response = format!(
+                "HTTP/1.1 302 X\r\nlocation: {location}\r\ncontent-length: 0\r\nconnection: close\r\n\r\n"
+            );
+            let _ = stream.write_all(response.as_bytes());
+        }
         Reply::Redirect(location) => {
             let response = format!(
                 "HTTP/1.1 302 X\r\nlocation: {location}\r\ncontent-length: 0\r\nconnection: close\r\n\r\n"
@@ -2530,6 +2538,13 @@ fn preview_links_are_requested_only_on_the_library_host() {
         "/magicui.design/docs/final?tab=api" => ok("<html>ok</html>"),
         "/magicui.design/docs/gone" => Reply::Respond(404, "gone".into()),
         "/magicui.design/docs/hang" => Reply::Hang,
+        path if path.starts_with("/magicui.design/docs/slow") => {
+            let hop: u32 = path
+                .trim_start_matches("/magicui.design/docs/slow")
+                .parse()
+                .unwrap_or(0);
+            Reply::SlowRedirect(format!("slow{}", hop + 1))
+        }
         path if path.starts_with("/magicui.design/r/") => {
             ok(json!({"files":[{"path":"button.tsx","content":"export const x = 1"}]}).to_string())
         }
@@ -2551,8 +2566,16 @@ fn preview_links_are_requested_only_on_the_library_host() {
         "https://user@magicui.design/docs/creds",
         "https://magicui.design/docs/away",
         "https://magicui.design/docs/hang",
+        "https://magicui.design/docs/slow0",
     ] {
+        let started = std::time::Instant::now();
         assert_eq!(preview_of(refused, &server), "unverified", "{refused}");
+        // One 500 ms budget for the whole chain (hang: 5 s; slow chain: 200 ms per hop).
+        assert!(
+            started.elapsed() < Duration::from_millis(2500),
+            "{refused}: {:?}",
+            started.elapsed()
+        );
     }
     let calls: Vec<String> = server
         .calls
@@ -2622,7 +2645,7 @@ fn get_skips_agent_instruction_files_with_a_warning() {
             {"path":".cursor/rules/x.mdc","content":"MARKER"},
             {"path":".github/workflows/ci.yml","content":"on: push"},
             {"path":"components/a.tsx","content":"import \"./.claude/helper\";\nexport const a = 1"},
-            {"path":".claude/helper.ts","content":"export {}"}
+            {"path":"components/.claude/helper.ts","content":"export {}"}
         ]),
     );
     let out = temp();
@@ -2649,7 +2672,7 @@ fn get_skips_agent_instruction_files_with_a_warning() {
         "CLAUDE.md",
         ".claude/skills/x/SKILL.md",
         ".cursor/rules/x.mdc",
-        ".claude/helper.ts",
+        "components/.claude/helper.ts",
     ] {
         assert!(
             json["skipped"].as_array().unwrap().contains(&json!(path)),

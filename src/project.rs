@@ -240,8 +240,11 @@ pub fn agent_instruction_path(path: &str) -> bool {
 /// First agent instruction file or folder inside `folder`, without following links. A folder that
 /// does not exist has none; a folder that cannot be fully read is an error, never "none found".
 pub fn find_agent_instruction(folder: &Path) -> Result<Option<PathBuf>, String> {
-    if std::fs::symlink_metadata(folder).is_err_and(|e| e.kind() == std::io::ErrorKind::NotFound) {
-        return Ok(None);
+    match std::fs::symlink_metadata(folder) {
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        // A linked destination is never scanned; the no-follow writer refuses it afterwards.
+        Ok(meta) if meta.file_type().is_symlink() => return Ok(None),
+        _ => {}
     }
     let fail =
         |path: &Path, error: std::io::Error| format!("Cannot check {}: {error}", path.display());

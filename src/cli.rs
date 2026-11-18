@@ -1083,7 +1083,16 @@ fn cmd_show(args: &Args) -> CliResult {
     ));
     print_files(&output, code);
     if truthy(output.get("project")) {
-        say(&format!("project:   {}", output["project"]));
+        let mut shown = output["project"].clone();
+        if shown["unverifiedDependencies"]
+            .as_array()
+            .is_some_and(Vec::is_empty)
+        {
+            shown
+                .as_object_mut()
+                .map(|o| o.remove("unverifiedDependencies"));
+        }
+        say(&format!("project:   {shown}"));
     }
     Ok(0)
 }

@@ -71,8 +71,12 @@ function dependencyLists(detail) {
   return { plain, unverified };
 }
 
-export const missingDependencies = (detail, project) => dependencyLists(detail).plain.filter(d => bareName(d) !== 'cn' && !(bareName(d) in project.dependencies));
-export const unverifiedDependencies = (detail) => dependencyLists(detail).unverified;
+// Plain npm dependencies the project does not list, and the ones that are not plain npm names.
+export function dependenciesFor(detail, project) {
+  const { plain, unverified } = dependencyLists(detail);
+  return { missing: plain.filter(d => bareName(d) !== 'cn' && !(bareName(d) in project.dependencies)), unverified };
+}
+export const missingDependencies = (detail, project) => dependenciesFor(detail, project).missing;
 
 const INSTRUCTION_FOLDERS = ['.claude', '.agents', '.cursor', '.codex', '.windsurf', '.gemini', '.clinerules', '.roo', '.kiro'];
 const INSTRUCTION_FILES = ['claude.md', 'claude.local.md', 'agents.md', 'gemini.md', '.cursorrules', '.windsurfrules', '.clinerules', 'copilot-instructions.md'];
@@ -94,7 +98,10 @@ export function safeRelative(value) {
 // First agent instruction file or folder inside folder, without following links.
 // A folder that does not exist has none; a folder that cannot be fully read throws.
 export function findAgentInstruction(folder) {
-  try { lstatSync(folder); } catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+  let stat;
+  try { stat = lstatSync(folder); } catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+  if (stat.isSymbolicLink()) return null; // never scanned; the writer refuses a linked destination
+
   const stack = [folder];
   while (stack.length) {
     const dir = stack.pop();
