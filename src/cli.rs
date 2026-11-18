@@ -1153,6 +1153,15 @@ fn cmd_get(args: &Args) -> CliResult {
         } else {
             file.get("path")
         };
+        let instruction = label
+            .and_then(Value::as_str)
+            .and_then(project::safe_relative)
+            .filter(|relative| project::agent_instruction_path(&format!("{name}/{relative}")));
+        if let Some(relative) = instruction {
+            instruction_paths.push(relative);
+            skipped.push(label.cloned().unwrap_or(Value::Null));
+            continue;
+        }
         let Some(content) = file
             .get("content")
             .and_then(Value::as_str)
@@ -1165,10 +1174,6 @@ fn cmd_get(args: &Args) -> CliResult {
             .and_then(Value::as_str)
             .and_then(project::safe_relative)
         {
-            Some(relative) if project::agent_instruction_path(&format!("{name}/{relative}")) => {
-                instruction_paths.push(relative);
-                skipped.push(label.cloned().unwrap_or(Value::Null));
-            }
             Some(relative) => files.push((relative, content.to_string())),
             None => {
                 let path = label.cloned().unwrap_or(Value::Null);

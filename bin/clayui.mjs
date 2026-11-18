@@ -349,10 +349,10 @@ async function cmdGet({ values, positionals }) {
   const instructions = [];
   const files = [];
   for (const file of detail.files ?? []) {
-    if (typeof file.content !== 'string' || !file.content.length) { skipped.push(file.target || file.path); continue; }
     const relative = safeRelative(file.target || file.path);
-    if (relative && agentInstructionPath(`${detail.name}/${relative}`)) { skipped.push(file.target || file.path); instructions.push(relative); }
-    else if (relative) files.push({ relative, content: file.content });
+    if (relative && agentInstructionPath(`${detail.name}/${relative}`)) { skipped.push(file.target || file.path); instructions.push(relative); continue; }
+    if (typeof file.content !== 'string' || !file.content.length) { skipped.push(file.target || file.path); continue; }
+    if (relative) files.push({ relative, content: file.content });
     else { skipped.push(file.target || file.path); unsafe.push(file.target || file.path); }
   }
   for (const warning of detail.sourceWarnings ?? []) console.error(`Uwaga: ${warning}`);

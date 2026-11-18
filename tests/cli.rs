@@ -2543,7 +2543,12 @@ fn preview_links_are_requested_only_on_the_library_host() {
                 .trim_start_matches("/magicui.design/docs/slow")
                 .parse()
                 .unwrap_or(0);
-            Reply::SlowRedirect(format!("slow{}", hop + 1))
+            // Three slow hops then a page: a shared 500 ms budget fails, a per-hop budget would pass.
+            if hop < 3 {
+                Reply::SlowRedirect(format!("slow{}", hop + 1))
+            } else {
+                ok("<html>ok</html>")
+            }
         }
         path if path.starts_with("/magicui.design/r/") => {
             ok(json!({"files":[{"path":"button.tsx","content":"export const x = 1"}]}).to_string())
@@ -2641,6 +2646,7 @@ fn get_skips_agent_instruction_files_with_a_warning() {
         "button",
         json!([
             {"path":"CLAUDE.md","content":"MARKER"},
+            {"path":"AGENTS.md","content":""},
             {"path":".claude/skills/x/SKILL.md","content":"MARKER"},
             {"path":".cursor/rules/x.mdc","content":"MARKER"},
             {"path":".github/workflows/ci.yml","content":"on: push"},
@@ -2670,6 +2676,7 @@ fn get_skips_agent_instruction_files_with_a_warning() {
     let json = got.json();
     for path in [
         "CLAUDE.md",
+        "AGENTS.md",
         ".claude/skills/x/SKILL.md",
         ".cursor/rules/x.mdc",
         "components/.claude/helper.ts",
