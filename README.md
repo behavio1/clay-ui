@@ -165,7 +165,7 @@ Component downloads are fresh for 7 days. On upstream failure, a cached copy up 
 
 ## Security review
 
-In November 2026 we reviewed the whole repository with Cloudflare's open-source [security-audit skill](https://github.com/cloudflare/security-audit-skill): the CLI, the npm launcher, the release workflow and the agent skill. Fixes from that review shipped in 0.3.1. The [0.3.1 release notes](https://github.com/behavio1/clay-ui/releases/tag/v0.3.1) list what we changed, what we checked and found fine, and what is still open.
+In November 2026 we reviewed the whole repository with Cloudflare's open-source [security-audit skill](https://github.com/cloudflare/security-audit-skill): the CLI, the npm launcher, the release workflow and the agent skill. Fixes from that review shipped in 0.3.1 and 0.3.2. The release notes list exactly what we changed and what we checked: [0.3.1](https://github.com/behavio1/clay-ui/releases/tag/v0.3.1) (fixes, and the areas we found fine) and [0.3.2](https://github.com/behavio1/clay-ui/releases/tag/v0.3.2) (preview links, agent instruction files, dependency names).
 
 To report a vulnerability, see [SECURITY.md](SECURITY.md).
 
