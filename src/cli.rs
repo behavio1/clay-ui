@@ -584,8 +584,22 @@ fn license_line(detail: &Object) -> String {
     )
 }
 
+/// Escapes DEL and C1 characters, which serde_json leaves literal; they occur only inside strings.
+fn json_safe(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    for c in text.chars() {
+        if c == '\u{7f}' || ('\u{80}'..='\u{9f}').contains(&c) {
+            out.push_str(&format!("\\u{:04x}", c as u32));
+        } else {
+            out.push(c);
+        }
+    }
+    out
+}
+
 fn json_output(value: &Value) -> CliResult<()> {
-    say(&serde_json::to_string_pretty(value).map_err(|error| other(error.to_string()))?);
+    let text = serde_json::to_string_pretty(value).map_err(|error| other(error.to_string()))?;
+    let _ = writeln!(std::io::stdout(), "{}", json_safe(&scrub(&text)));
     Ok(())
 }
 
@@ -1393,6 +1407,14 @@ fn cached_detail(source: &Source, item: &Object) -> net::Res<Object> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn json_output_keeps_control_characters_as_escapes() {
+        let value = json!({"title": "A\u{1b}B\u{9b}C\u{7f}D"});
+        let text = json_safe(&serde_json::to_string(&value).unwrap());
+        assert!(!text.chars().any(|c| c.is_control()), "{text}");
+        assert_eq!(serde_json::from_str::<Value>(&text).unwrap(), value);
+    }
 
     #[test]
     fn printable_drops_terminal_control_characters() {
