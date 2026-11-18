@@ -163,6 +163,12 @@ Component downloads are fresh for 7 days. On upstream failure, a cached copy up 
 - No Gemini key: keyword search is normal. The env-file option `CLAYUI_GEMINI_ENV_FILE` requires a line beginning exactly `GOOGLE_API_KEY=`.
 - Check `clayui --version`; use a writable `CLAYUI_CACHE_DIR` if the home cache is read-only.
 
+## Security review
+
+In November 2026 we reviewed the whole repository with Cloudflare's open-source [security-audit skill](https://github.com/cloudflare/security-audit-skill): the CLI, the npm launcher, the release workflow and the agent skill. Fixes from that review shipped in 0.3.1. The [0.3.1 release notes](https://github.com/behavio1/clay-ui/releases/tag/v0.3.1) list what we changed, what we checked and found fine, and what is still open.
+
+To report a vulnerability, see [SECURITY.md](SECURITY.md).
+
 ## No cryptocurrency
 
 Clay UI has no token or coin. Any coin that uses the Clay UI name is not ours: we did not create, endorse or promote it, and we have received no tokens, payment or allocation from anyone. We will not endorse any token.
