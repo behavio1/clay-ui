@@ -118,6 +118,7 @@ fn resolves(file: &str, import: &str, delivered: &HashSet<&str>) -> bool {
 
 pub fn specifiers(files: &[(String, String)]) -> Vec<(String, String)> {
     let mut imports = Vec::new();
+    let mut seen = HashSet::new();
     for (file, text) in files {
         if !["ts", "tsx", "js", "jsx", "mts", "cts", "mjs", "cjs"]
             .iter()
@@ -137,7 +138,7 @@ pub fn specifiers(files: &[(String, String)]) -> Vec<(String, String)> {
             };
             if let Some(Token::String(import)) = tokens.get(next) {
                 let entry = (file.clone(), import.clone());
-                if !imports.contains(&entry) {
+                if seen.insert(entry.clone()) {
                     imports.push(entry);
                 }
             }
@@ -166,6 +167,7 @@ pub fn missing(files: &[(String, String)]) -> Vec<Value> {
 
 pub fn packages(files: &[(String, String)]) -> Vec<String> {
     let mut packages = Vec::new();
+    let mut seen = HashSet::new();
     for (_, import) in specifiers(files) {
         if import.starts_with(['.', '/', '#']) || import.starts_with("@/") || import.contains(':') {
             continue;
@@ -179,7 +181,7 @@ pub fn packages(files: &[(String, String)]) -> Vec<String> {
         } else {
             parts[0].to_string()
         };
-        if name != "cn" && !packages.contains(&name) {
+        if name != "cn" && seen.insert(name.clone()) {
             packages.push(name);
         }
     }

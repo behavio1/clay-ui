@@ -31,5 +31,5 @@ export function missingDependencies(detail, project) {
 export function safeRelative(value) {
   if (!value || path.isAbsolute(value) || /^[A-Za-z]:/.test(value) || value.startsWith('~')) return null;
   const parts = value.split(/[\\/]/).filter(Boolean);
-  return parts.length && !parts.some((part) => part === '..' || part === '.') ? parts.join('/') : null;
+  return parts.length && !parts.some((part) => part === '..' || part === '.' || part.includes(':')) ? parts.join('/') : null;
 }

@@ -2,6 +2,7 @@
 
 use crate::js::Object;
 use serde_json::Value;
+use std::collections::HashSet;
 use std::path::{Component, Path, PathBuf};
 
 pub struct Project {
@@ -73,15 +74,18 @@ pub fn missing_dependencies(detail: &Object, project: &Project) -> Vec<Value> {
         .and_then(Value::as_array)
         .cloned()
         .unwrap_or_default();
+    let mut listed: HashSet<String> = list
+        .iter()
+        .filter_map(Value::as_str)
+        .map(|v| {
+            v.char_indices()
+                .find(|(i, c)| *i > 0 && *c == '@')
+                .map_or(v, |(i, _)| &v[..i])
+                .to_string()
+        })
+        .collect();
     for package in crate::imports::packages(&crate::cli::delivered_files(detail)) {
-        if !list.iter().any(|value| {
-            value.as_str().is_some_and(|v| {
-                v.char_indices()
-                    .find(|(i, c)| *i > 0 && *c == '@')
-                    .map_or(v, |(i, _)| &v[..i])
-                    == package
-            })
-        }) {
+        if listed.insert(package.clone()) {
             list.push(Value::String(package));
         }
     }
@@ -114,6 +118,10 @@ pub fn safe_relative(value: &str) -> Option<String> {
         .split(['/', '\\'])
         .filter(|part| !part.is_empty())
         .collect();
-    (!parts.is_empty() && !parts.iter().any(|part| *part == ".." || *part == "."))
-        .then(|| parts.join("/"))
+    // A ':' in any segment is a Windows drive or stream prefix that would leave the folder.
+    (!parts.is_empty()
+        && !parts
+            .iter()
+            .any(|part| *part == ".." || *part == "." || part.contains(':')))
+    .then(|| parts.join("/"))
 }

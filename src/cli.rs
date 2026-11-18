@@ -84,12 +84,19 @@ pub(crate) fn scrub_value(value: Value) -> Value {
     }
 }
 
+/// Drops terminal control characters (escape sequences, BEL, CR) that upstream text could carry.
+fn printable(text: &str) -> String {
+    text.chars()
+        .filter(|c| !c.is_control() || *c == '\n' || *c == '\t')
+        .collect()
+}
+
 fn say(text: &str) {
-    let _ = writeln!(std::io::stdout(), "{}", scrub(text));
+    let _ = writeln!(std::io::stdout(), "{}", printable(&scrub(text)));
 }
 
 fn warn(text: &str) {
-    let _ = writeln!(std::io::stderr(), "{}", scrub(text));
+    let _ = writeln!(std::io::stderr(), "{}", printable(&scrub(text)));
 }
 
 #[derive(Clone, Copy)]
@@ -1386,6 +1393,14 @@ fn cached_detail(source: &Source, item: &Object) -> net::Res<Object> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn printable_drops_terminal_control_characters() {
+        assert_eq!(
+            printable("Button\u{1b}[2K\u{1b}]0;title\u{7}\r\u{9b}x\n\tok"),
+            "Button[2K]0;titlex\n\tok"
+        );
+    }
 
     #[test]
     fn description_cleanup_keeps_non_install_text_exactly() {

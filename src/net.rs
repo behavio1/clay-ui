@@ -8,6 +8,8 @@ use std::time::Duration;
 use ureq::{Agent, AgentBuilder, ErrorKind, RedirectAuthHeaders};
 
 const TIMEOUT_MS: u64 = 15_000;
+/// Largest response body read into memory; matches the component cache read limit.
+const MAX_BODY_BYTES: u64 = 32 * 1024 * 1024;
 
 #[derive(Debug, Clone)]
 pub struct Fail {
@@ -152,6 +154,7 @@ impl Reply {
         let host = self.host;
         self.response
             .into_reader()
+            .take(MAX_BODY_BYTES + 1)
             .read_to_end(&mut bytes)
             .map_err(|error| {
                 let code = if matches!(
@@ -164,6 +167,9 @@ impl Reply {
                 };
                 Fail::other(format!("{host}: {code}"))
             })?;
+        if bytes.len() as u64 > MAX_BODY_BYTES {
+            return Err(Fail::other(format!("{host}: response too large")));
+        }
         let text = String::from_utf8_lossy(&bytes);
         Ok(text.strip_prefix('\u{feff}').unwrap_or(&text).to_string())
     }

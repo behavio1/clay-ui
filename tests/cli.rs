@@ -295,6 +295,25 @@ fn s4_a_timing_out_source_keeps_its_last_good_data_and_reports_the_error() {
 }
 
 #[test]
+fn an_oversized_response_fails_the_source_and_keeps_the_index() {
+    let cache = temp();
+    seed_index(&cache, "magicui", vec![item("magicui", "marquee")]);
+    let server = mock(|_| ok(" ".repeat(33 * 1024 * 1024)));
+    let result = cli(&["sync", "--source", "magicui"], &server, &cache);
+    assert_eq!(result.code, 1);
+    let entry = read_json(cache.join("index.json"))["sources"]["magicui"].clone();
+    assert_eq!(entry["items"].as_array().unwrap().len(), 1);
+    assert!(
+        entry["error"]
+            .as_str()
+            .unwrap()
+            .contains("response too large"),
+        "{}",
+        entry["error"]
+    );
+}
+
+#[test]
 fn s5_invalid_json_does_not_overwrite_the_index() {
     let cache = temp();
     seed_index(&cache, "magicui", vec![item("magicui", "marquee")]);
@@ -351,6 +370,9 @@ fn s19_paths_leaving_the_example_folder_are_rejected() {
         "C:\\x",
         "a/../../b",
         "a/./b",
+        "ui/C:package.json",
+        "a/C:/b",
+        "a/x:y",
     ] {
         assert_eq!(safe_relative(unsafe_path), None, "{unsafe_path}");
     }
