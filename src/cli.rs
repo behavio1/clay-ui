@@ -460,10 +460,10 @@ pub(crate) fn delivered_files(detail: &Object) -> Vec<(String, String)> {
             } else {
                 file.get("path")
             };
-            Some((
-                project::safe_relative(label?.as_str()?)?,
-                content.to_string(),
-            ))
+            let relative = project::safe_relative(label?.as_str()?)?;
+            let name = detail.get("name").and_then(Value::as_str).unwrap_or("");
+            (!project::agent_instruction_path(&format!("{name}/{relative}")))
+                .then(|| (relative, content.to_string()))
         })
         .collect()
 }
@@ -595,6 +595,10 @@ fn json_safe(text: &str) -> String {
         }
     }
     out
+}
+
+fn detail_source(detail: &Object) -> Option<&'static Source> {
+    source_by_id(detail.get("source")?.as_str()?)
 }
 
 fn json_output(value: &Value) -> CliResult<()> {
@@ -903,7 +907,10 @@ fn detail_for_search(item: &Object, code: bool) -> Object {
         let source = source_by_id(source_id)
             .ok_or("Cannot read properties of undefined (reading 'detail')")?;
         let detail = cached_detail(source, item).map_err(|error| error.message)?;
-        let observed = with_observed_gaps(&detail, preview_status(detail.get("previewUrl")));
+        let observed = with_observed_gaps(
+            &detail,
+            preview_status(detail_source(&detail), detail.get("previewUrl")),
+        );
         let mut out = if code {
             observed
         } else {
@@ -1035,7 +1042,7 @@ fn cmd_show(args: &Args) -> CliResult {
     print_cache_warning(&detail);
     let observed = clean_description(with_observed_gaps(
         &detail,
-        preview_status(detail.get("previewUrl")),
+        preview_status(detail_source(&detail), detail.get("previewUrl")),
     ));
     let code = args.flag("code");
     let mut output = if code {
@@ -1046,7 +1053,8 @@ fn cmd_show(args: &Args) -> CliResult {
     output.insert(
         "project".into(),
         project.as_ref().map_or(Value::Null, |project| {
-            json!({ "react": project.react, "tailwind": project.tailwind, "missingDependencies": project::missing_dependencies(&detail, project) })
+            let (missing, unverified) = project::dependencies_for(&detail, project);
+            json!({ "react": project.react, "tailwind": project.tailwind, "missingDependencies": missing, "unverifiedDependencies": unverified })
         }),
     );
     if args.flag("json") {
@@ -1089,7 +1097,7 @@ fn cmd_get(args: &Args) -> CliResult {
     let loaded = load_detail(positional(args))?;
     let observed = clean_description(with_observed_gaps(
         &loaded,
-        preview_status(loaded.get("previewUrl")),
+        preview_status(detail_source(&loaded), loaded.get("previewUrl")),
     ));
     let detail = scrub_value(Value::Object(observed))
         .as_object()
@@ -1109,12 +1117,20 @@ fn cmd_get(args: &Args) -> CliResult {
             destination.display()
         )));
     }
+    if let Some(found) = project::find_agent_instruction(&destination).map_err(other)? {
+        return Err(usage(format!(
+            "Folder {} contains agent instruction files from an earlier download ({}). Delete the folder and run get again.",
+            destination.display(),
+            found.display()
+        )));
+    }
     let mut skipped: Vec<Value> = detail
         .get("skipped")
         .and_then(Value::as_array)
         .cloned()
         .unwrap_or_default();
     let mut unsafe_paths = Vec::new();
+    let mut instruction_paths = Vec::new();
     let mut files: Vec<(String, String)> = Vec::new();
     for file in detail
         .get("files")
@@ -1140,6 +1156,10 @@ fn cmd_get(args: &Args) -> CliResult {
             .and_then(Value::as_str)
             .and_then(project::safe_relative)
         {
+            Some(relative) if project::agent_instruction_path(&format!("{name}/{relative}")) => {
+                instruction_paths.push(relative);
+                skipped.push(label.cloned().unwrap_or(Value::Null));
+            }
             Some(relative) => files.push((relative, content.to_string())),
             None => {
                 let path = label.cloned().unwrap_or(Value::Null);
@@ -1166,6 +1186,9 @@ fn cmd_get(args: &Args) -> CliResult {
                 js::string_of(file)
             }
         ));
+    }
+    for file in &instruction_paths {
+        warn(&format!("Skipped agent instruction file: {file}"));
     }
     let usage_text = detail
         .get("usage")

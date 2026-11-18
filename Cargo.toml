@@ -23,6 +23,8 @@ ureq = { version = "2.12", default-features = false, features = ["tls"] }
 serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
 # SHA-256 for the vector cache keys. Already required by rustls, so it adds nothing.
 ring = "0.17"
+# URL parsing for preview links, so the checked host is the host that is requested. Already required by ureq.
+url = "2.5"
 # NFD for query normalization, matching String.prototype.normalize.
 unicode-normalization = "0.1"
 # O_NOFOLLOW for writes that must not follow symbolic links.

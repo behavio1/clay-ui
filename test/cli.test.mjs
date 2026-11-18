@@ -216,3 +216,11 @@ test('R05 a detail with no code is no longer reported as free of gaps', () => {
   const shown = JSON.parse(raw(registryMock({ files: [] }), ['show', 'magicui/button', '--json'], cache).stdout);
   assert.ok(shown.gaps.includes('no-source-listing'));
 });
+
+test('plain dependencies and agent instruction paths match the Rust rules', async () => {
+  const { plainDependency, agentInstructionPath } = await import('../src/project.mjs');
+  for (const plain of ['react', 'react@^19', 'react@>=18 <20', 'react@^18 || ^19', 'react@1.2 - 2', '@radix-ui/react-dialog@1.1.2', 'motion@latest', 'x@1.0.0-beta.1+b', 'x@*', 'x@~1.2.x']) assert.equal(plainDependency(plain), true, plain);
+  for (const other of ['react@^', 'react@', 'payload.tgz', 'package.tar.gz', 'a.tar', 'lodash@npm:evil', 'clsx@https://x/c.tgz', 'git+https://x/y.git', 'github:a/b', 'file:../x', 'bad name', '', '@scope', '@scope/', '.hidden', '_x', 'React', 'x@1.2.3.4', '--global', '-g', 7]) assert.equal(plainDependency(other), false, String(other));
+  for (const path of ['CLAUDE.md', '.claude/skills/a/SKILL.md', '.cursor/rules/a.mdc', '.github/copilot-instructions.md', 'a.prompt.md']) assert.equal(agentInstructionPath(path), true, path);
+  for (const path of ['components/a.tsx', '.github/workflows/ci.yml', 'docs/claude.mdx']) assert.equal(agentInstructionPath(path), false, path);
+});

@@ -433,7 +433,11 @@ export const SOURCES = [
     id: 'shadcn', title: 'shadcn/ui', license: 'MIT', probeItems: true, indexUrl: 'https://ui.shadcn.com/r/index.json',
     itemUrl: (name) => `https://ui.shadcn.com/r/styles/new-york-v4/${encodeURIComponent(name)}.json`,
     previewUrl: (item) => item.meta?.links?.radix?.docs ?? item.meta?.links?.base?.docs ?? null,
-    enrich: async (item, preview) => (preview ? { description: frontmatter(await fetchText(`${preview}.md`), 'description') } : {}),
+    enrich: async (item, preview) => {
+      if (!preview) return {};
+      const response = await fetchOnHosts(`${preview}.md`, PREVIEW_HOSTS.shadcn);
+      return response?.ok ? { description: frontmatter(await response.text(), 'description') } : {};
+    },
   }),
   registrySource({
     id: 'magicui', title: 'Magic UI', license: 'MIT', indexUrl: 'https://magicui.design/r/registry.json',
@@ -465,13 +469,44 @@ export const SOURCES = [
 
 export const sourceById = (id) => SOURCES.find((source) => source.id === id);
 
+// Documentation hosts whose preview links may be requested; shared hosting is never trusted.
+const PREVIEW_HOSTS = {
+  shadcn: ['ui.shadcn.com'], magicui: ['magicui.design'], aceternity: ['ui.aceternity.com'], kokonut: ['kokonutui.com'],
+  beautifului: ['www.beautifului.dev'], rareui: ['shitui.in'], 'base-ui': ['base-ui.com'], radix: ['www.radix-ui.com'],
+  'ui-sdk': ['ui-sdk.dev'], '21st': ['21st.dev'], sonner: ['sonner.emilkowal.ski'], vaul: ['vaul.emilkowal.ski'],
+  'number-flow': ['number-flow.barvian.me'], cmdk: [],
+};
+
+const allowedUrl = (url, hosts) => url.protocol === 'https:' && !url.username && !url.password && !url.port && hosts.includes(url.hostname);
+
+// GET that never leaves hosts: redirects followed by hand, only to the first URL's host, one time budget.
+// Returns null when a request was refused before sending.
+async function fetchOnHosts(value, hosts) {
+  let current;
+  try { current = new URL(value); } catch { return null; }
+  if (!allowedUrl(current, hosts)) return null;
+  const firstHost = current.hostname;
+  const signal = AbortSignal.timeout(TIMEOUT_MS);
+  for (let hop = 0; hop < 6; hop += 1) {
+    const response = await request(current.href, { redirect: 'manual', signal });
+    const location = response.headers.get('location');
+    if (response.status < 300 || response.status >= 400 || !location) return response;
+    let next;
+    try { next = new URL(location, current); } catch { return response; }
+    if (!allowedUrl(next, hosts) || next.hostname !== firstHost) return null;
+    current = next;
+  }
+  return null;
+}
+
 // ok = page exists, broken = page is gone, unverified = could not tell, none = no page known.
-export async function previewStatus(url) {
+export async function previewStatus(sourceId, url) {
   if (!url) return 'none';
-  if (url.includes('#')) return 'unverified';
+  const hosts = PREVIEW_HOSTS[sourceId];
+  if (!hosts || typeof url !== 'string' || url.includes('#')) return 'unverified';
   try {
-    const response = await request(url);
-    if (new URL(response.url).host !== new URL(url).host) return 'unverified';
+    const response = await fetchOnHosts(url, hosts);
+    if (!response) return 'unverified';
     if (response.ok) return 'ok';
     return response.status === 404 || response.status === 410 ? 'broken' : 'unverified';
   } catch {

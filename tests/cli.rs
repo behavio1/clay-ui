@@ -52,6 +52,7 @@ struct Call {
 
 enum Reply {
     Respond(u16, String),
+    Redirect(String),
     Hang,
 }
 
@@ -102,6 +103,12 @@ fn serve(mut stream: TcpStream, handler: &Handler, calls: &Mutex<Vec<Call>>) -> 
     calls.lock().unwrap().push(call.clone());
     match handler(&call) {
         Reply::Hang => std::thread::sleep(Duration::from_secs(5)),
+        Reply::Redirect(location) => {
+            let response = format!(
+                "HTTP/1.1 302 X\r\nlocation: {location}\r\ncontent-length: 0\r\nconnection: close\r\n\r\n"
+            );
+            let _ = stream.write_all(response.as_bytes());
+        }
         Reply::Respond(status, body) => {
             let response = format!(
                 "HTTP/1.1 {status} X\r\ncontent-length: {}\r\nconnection: close\r\n\r\n{body}",
@@ -246,7 +253,7 @@ fn magic_item() -> Object {
     item_with(
         "magicui",
         "button",
-        json!({ "previewUrl": "https://x.dev/a" }),
+        json!({ "previewUrl": "https://magicui.design/docs/components/button" }),
     )
 }
 
@@ -1073,7 +1080,7 @@ fn cn_helper_is_not_a_missing_package_but_real_packages_are() {
         .unwrap()
         .clone();
     assert_eq!(
-        clayui_lib::project::missing_dependencies(&detail, &project),
+        clayui_lib::project::dependencies_for(&detail, &project).0,
         vec![json!("clsx"), json!("@radix-ui/react-dialog@1.0")]
     );
 }
@@ -1658,7 +1665,7 @@ fn registry_provenance_version_skipped_and_preview_match_show_get_and_manifest()
     let cache = temp();
     seed_index(&cache, "magicui", vec![magic_item()]);
     let server = mock(|call| {
-        if call.path.contains("x.dev") {
+        if call.path.contains("magicui.design/docs") {
             return Reply::Respond(404, "gone".into());
         }
         ok(json!({"version":"1.2.3", "ref":"release-tag", "files":[
@@ -2011,7 +2018,7 @@ fn cached_get_keeps_original_fetched_at_and_reports_unknown_offline_preview() {
     let cache = temp();
     seed_index(&cache, "magicui", vec![magic_item()]);
     let server = mock(|call| {
-        if call.path.contains("x.dev") {
+        if call.path.contains("magicui.design/docs") {
             ok("<html>working</html>")
         } else {
             ok(json!({"files":[{"path":"button.tsx","content":"export const x = 1"}]}).to_string())
@@ -2490,4 +2497,306 @@ fn ui_sdk_indexes_react_docs_and_downloads_only_the_component_examples() {
         &cache,
     );
     assert_eq!(usage_only.code, 3, "{}", usage_only.out);
+}
+
+// --- Audit decisions (0.3.2) --------------------------------------------------
+
+fn preview_of(preview: &str, server: &Mock) -> String {
+    let cache = temp();
+    seed_index(
+        &cache,
+        "magicui",
+        vec![item_with(
+            "magicui",
+            "button",
+            json!({ "previewUrl": preview }),
+        )],
+    );
+    let shown = cli_env(
+        &["show", "magicui/button", "--json"],
+        server,
+        &cache,
+        vec![("CLAYUI_TEST_TIMEOUT_MS", "500")],
+    );
+    assert_eq!(shown.code, 0, "{}", shown.err);
+    shown.json()["previewStatus"].as_str().unwrap().to_string()
+}
+
+#[test]
+fn preview_links_are_requested_only_on_the_library_host() {
+    let server = mock(|call| match call.path.as_str() {
+        "/magicui.design/docs/away" => Reply::Redirect("https://evil.example/x".into()),
+        "/magicui.design/docs/start" => Reply::Redirect("../docs/final?tab=api".into()),
+        "/magicui.design/docs/final?tab=api" => ok("<html>ok</html>"),
+        "/magicui.design/docs/gone" => Reply::Respond(404, "gone".into()),
+        "/magicui.design/docs/hang" => Reply::Hang,
+        path if path.starts_with("/magicui.design/r/") => {
+            ok(json!({"files":[{"path":"button.tsx","content":"export const x = 1"}]}).to_string())
+        }
+        _ => ok("<html>other</html>"),
+    });
+    assert_eq!(
+        preview_of("https://magicui.design/docs/start", &server),
+        "ok"
+    );
+    assert_eq!(
+        preview_of("https://magicui.design/docs/gone", &server),
+        "broken"
+    );
+    for refused in [
+        "https://evil.example/x",
+        "https://127.0.0.1\\@magicui.design/x",
+        "http://magicui.design/docs/plain",
+        "https://magicui.design:8443/docs/port",
+        "https://user@magicui.design/docs/creds",
+        "https://magicui.design/docs/away",
+        "https://magicui.design/docs/hang",
+    ] {
+        assert_eq!(preview_of(refused, &server), "unverified", "{refused}");
+    }
+    let calls: Vec<String> = server
+        .calls
+        .lock()
+        .unwrap()
+        .iter()
+        .map(|c| c.path.clone())
+        .collect();
+    for path in &calls {
+        assert!(
+            path.starts_with("/magicui.design/"),
+            "unexpected request {path}"
+        );
+        assert!(
+            !path.contains("plain") && !path.contains("port") && !path.contains("creds"),
+            "{path}"
+        );
+    }
+}
+
+#[test]
+fn shadcn_enrichment_skips_docs_on_other_hosts_and_keeps_the_index_description() {
+    let cache = temp();
+    let server = mock(|call| {
+        if call.path.contains("ui.shadcn.com/r/index.json") {
+            ok(
+                json!([{"name":"button","type":"registry:ui","description":"From index",
+                "meta":{"links":{"radix":{"docs":"https://evil.example/docs/button"}}}}])
+                .to_string(),
+            )
+        } else {
+            ok("{}")
+        }
+    });
+    let result = cli(&["sync", "--source", "shadcn"], &server, &cache);
+    assert_eq!(result.code, 0, "{}", result.err);
+    let item = read_json(cache.join("index.json"))["sources"]["shadcn"]["items"][0].clone();
+    assert_eq!(item["description"], "From index");
+    assert!(server
+        .calls
+        .lock()
+        .unwrap()
+        .iter()
+        .all(|call| !call.path.contains("evil.example")));
+}
+
+fn instruction_item(name: &str, files: Value) -> (PathBuf, Mock) {
+    let cache = temp();
+    seed_index(
+        &cache,
+        "magicui",
+        vec![item_with("magicui", name, json!({}))],
+    );
+    (
+        cache,
+        mock(move |_| ok(json!({ "files": files }).to_string())),
+    )
+}
+
+#[test]
+fn get_skips_agent_instruction_files_with_a_warning() {
+    let (cache, server) = instruction_item(
+        "button",
+        json!([
+            {"path":"CLAUDE.md","content":"MARKER"},
+            {"path":".claude/skills/x/SKILL.md","content":"MARKER"},
+            {"path":".cursor/rules/x.mdc","content":"MARKER"},
+            {"path":".github/workflows/ci.yml","content":"on: push"},
+            {"path":"components/a.tsx","content":"import \"./.claude/helper\";\nexport const a = 1"},
+            {"path":".claude/helper.ts","content":"export {}"}
+        ]),
+    );
+    let out = temp();
+    let got = cli(
+        &[
+            "get",
+            "magicui/button",
+            "--out",
+            out.to_str().unwrap(),
+            "--json",
+        ],
+        &server,
+        &cache,
+    );
+    assert_eq!(got.code, 0, "{}", got.err);
+    let folder = out.join("magicui/button");
+    assert!(folder.join("components/a.tsx").exists());
+    assert!(folder.join(".github/workflows/ci.yml").exists());
+    for planted in ["CLAUDE.md", ".claude", ".cursor"] {
+        assert!(!folder.join(planted).exists(), "{planted}");
+    }
+    let json = got.json();
+    for path in [
+        "CLAUDE.md",
+        ".claude/skills/x/SKILL.md",
+        ".cursor/rules/x.mdc",
+        ".claude/helper.ts",
+    ] {
+        assert!(
+            json["skipped"].as_array().unwrap().contains(&json!(path)),
+            "{path}"
+        );
+        assert!(
+            got.err
+                .contains(&format!("Skipped agent instruction file: {path}")),
+            "{}",
+            got.err
+        );
+    }
+    assert_eq!(
+        json["missingLocalImports"],
+        json!([{"file":"components/a.tsx","import":"./.claude/helper"}])
+    );
+}
+
+#[test]
+fn get_with_only_instruction_files_or_an_instruction_name_creates_nothing() {
+    for (name, path) in [("button", "AGENTS.md"), (".claude/skills/x", "SKILL.md")] {
+        let (cache, server) = instruction_item(name, json!([{"path":path,"content":"MARKER"}]));
+        let out = temp();
+        let got = cli(
+            &[
+                "get",
+                &format!("magicui/{name}"),
+                "--out",
+                out.to_str().unwrap(),
+            ],
+            &server,
+            &cache,
+        );
+        assert_eq!(got.code, 3, "{name}: {}", got.err);
+        assert!(!out.join("magicui").exists(), "{name}");
+    }
+}
+
+#[test]
+fn get_force_refuses_a_folder_holding_earlier_instruction_files() {
+    let (cache, server) = instruction_item(
+        "button",
+        json!([{"path":"a.tsx","content":"export const a = 1"}]),
+    );
+    let out = temp();
+    let folder = out.join("magicui/button");
+    fs::create_dir_all(&folder).unwrap();
+    fs::write(folder.join("CLAUDE.md"), "MARKER").unwrap();
+    let got = cli(
+        &[
+            "get",
+            "magicui/button",
+            "--out",
+            out.to_str().unwrap(),
+            "--force",
+        ],
+        &server,
+        &cache,
+    );
+    assert_eq!(got.code, 2, "{}", got.err);
+    assert!(
+        got.err.contains("contains agent instruction files"),
+        "{}",
+        got.err
+    );
+    assert!(!folder.join("a.tsx").exists());
+    assert_eq!(
+        fs::read_to_string(folder.join("CLAUDE.md")).unwrap(),
+        "MARKER"
+    );
+}
+
+#[test]
+fn show_project_separates_unverified_dependencies() {
+    let cache = temp();
+    seed_index(
+        &cache,
+        "magicui",
+        vec![item_with("magicui", "button", json!({}))],
+    );
+    let server = mock(|_| {
+        ok(json!({
+            "dependencies": ["lodash@npm:evil", "clsx@https://x/c.tgz", "payload.tgz", "react@^19", 7],
+            "files": [{"path":"a.tsx","content":"import _ from \"lodash\";\nimport \"bad name\";\nimport \"present\";"}]
+        })
+        .to_string())
+    });
+    let project = temp();
+    fs::write(
+        project.join("package.json"),
+        r#"{"dependencies":{"present":"1.0.0"}}"#,
+    )
+    .unwrap();
+    let shown = cli(
+        &[
+            "show",
+            "magicui/button",
+            "--project",
+            project.to_str().unwrap(),
+            "--json",
+        ],
+        &server,
+        &cache,
+    );
+    assert_eq!(shown.code, 0, "{}", shown.err);
+    let project_json = shown.json()["project"].clone();
+    assert_eq!(
+        project_json["missingDependencies"],
+        json!(["react@^19", "lodash"])
+    );
+    assert_eq!(
+        project_json["unverifiedDependencies"],
+        json!([
+            "lodash@npm:evil",
+            "clsx@https://x/c.tgz",
+            "payload.tgz",
+            7,
+            "bad name"
+        ])
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn get_force_refuses_a_folder_it_cannot_fully_check() {
+    use std::os::unix::fs::PermissionsExt;
+    let (cache, server) = instruction_item(
+        "button",
+        json!([{"path":"a.tsx","content":"export const a = 1"}]),
+    );
+    let out = temp();
+    let locked = out.join("magicui/button/locked");
+    fs::create_dir_all(&locked).unwrap();
+    fs::set_permissions(&locked, fs::Permissions::from_mode(0o000)).unwrap();
+    let got = cli(
+        &[
+            "get",
+            "magicui/button",
+            "--out",
+            out.to_str().unwrap(),
+            "--force",
+        ],
+        &server,
+        &cache,
+    );
+    fs::set_permissions(&locked, fs::Permissions::from_mode(0o755)).unwrap();
+    assert_eq!(got.code, 1, "{}", got.err);
+    assert!(got.err.contains("Cannot check"), "{}", got.err);
+    assert!(!out.join("magicui/button/a.tsx").exists());
 }

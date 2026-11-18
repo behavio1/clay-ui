@@ -178,9 +178,13 @@ impl Reply {
 pub type Headers = Vec<(&'static str, String)>;
 
 pub fn request(url: &str, headers: &Headers) -> Res<Reply> {
+    request_on(client(), url, headers, timeout(TIMEOUT_MS))
+}
+
+fn request_on(agent: &Agent, url: &str, headers: &Headers, budget: Duration) -> Res<Reply> {
     let host = host_of(url).map_err(Fail::other)?;
     let target = transport_url(url);
-    let mut call = client().get(&target).timeout(timeout(TIMEOUT_MS));
+    let mut call = agent.get(&target).timeout(budget);
     for (name, value) in headers {
         call = call.set(name, value);
     }
@@ -198,6 +202,59 @@ pub fn request(url: &str, headers: &Headers) -> Res<Reply> {
         response,
         host,
     })
+}
+
+/// A URL that may be requested on one of `hosts`: https, default port, no credentials.
+fn allowed_url(url: &url::Url, hosts: &[String]) -> bool {
+    url.scheme() == "https"
+        && url.username().is_empty()
+        && url.password().is_none()
+        && url.port().is_none()
+        && url
+            .host_str()
+            .is_some_and(|host| hosts.iter().any(|allowed| allowed == host))
+}
+
+/// GET that never leaves `hosts`: redirects are followed by hand, only to the first URL's host,
+/// with one time budget for the whole chain. `None` means a request was refused before sending.
+pub fn fetch_on_hosts(url: &str, hosts: &[String]) -> Res<Option<Reply>> {
+    let Ok(mut current) = url::Url::parse(url) else {
+        return Ok(None);
+    };
+    if !allowed_url(&current, hosts) {
+        return Ok(None);
+    }
+    let first_host = current.host_str().unwrap_or_default().to_string();
+    let budget = timeout(TIMEOUT_MS);
+    let started = std::time::Instant::now();
+    for _ in 0..6 {
+        let left = budget.saturating_sub(started.elapsed());
+        if left.is_zero() {
+            return Err(Fail::source(format!("{first_host}: TimeoutError")));
+        }
+        // ureq's connect timeout is separate from the request timeout, so it gets the remaining budget too.
+        let hop = AgentBuilder::new()
+            .redirects(0)
+            .timeout_connect(left)
+            .user_agent(concat!("clayui/", env!("CARGO_PKG_VERSION")))
+            .build();
+        let reply = request_on(&hop, current.as_str(), &Vec::new(), left)?;
+        if !(300..400).contains(&reply.status) {
+            return Ok(Some(reply));
+        }
+        let Some(next) = reply
+            .response
+            .header("location")
+            .and_then(|location| current.join(location).ok())
+        else {
+            return Ok(Some(reply));
+        };
+        if !allowed_url(&next, hosts) || next.host_str() != Some(first_host.as_str()) {
+            return Ok(None);
+        }
+        current = next;
+    }
+    Ok(None)
 }
 
 fn fetch_ok(url: &str, headers: &Headers) -> Res<Reply> {

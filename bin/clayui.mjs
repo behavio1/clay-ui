@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 import { missingLocalImports } from '../src/imports.mjs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import { inspectProject, missingDependencies, safeRelative, UsageError } from '../src/project.mjs';
+import { agentInstructionPath, deliverableFiles, findAgentInstruction, inspectProject, missingDependencies, safeRelative, unverifiedDependencies, UsageError } from '../src/project.mjs';
 import { VectorStore, cosine, embedQuery, readKey } from '../src/embeddings.mjs';
 import { expandQuery, rank, rankSemantic } from '../src/search.mjs';
 import { SOURCES, previewStatus, sourceById, searchLicense } from '../src/sources.mjs';
@@ -60,7 +60,7 @@ function withObservedGaps(detail, status) {
   const gaps = new Set(detail.gaps);
   if (!hasCode(detail) && !gaps.has('pro-only') && !gaps.has('needs-key')) gaps.add('no-source-listing');
   if (status === 'broken') gaps.add('preview-broken');
-  const missing = missingLocalImports(detail.files ?? []);
+  const missing = missingLocalImports(deliverableFiles(detail));
   if (missing.length) gaps.add('local-imports-missing');
   return { ...detail, missingLocalImports: missing, gaps: [...gaps], previewStatus: status === 'unverified' && detail.fromCache ? 'unknown' : status };
 }
@@ -194,7 +194,7 @@ async function cmdSearch({ values, positionals }) {
       if (index >= detailed) return item;
       try {
         const detail = await cachedDetail(sourceById(item.source), item);
-        const observed = withObservedGaps(detail, await previewStatus(detail.previewUrl));
+        const observed = withObservedGaps(detail, await previewStatus(detail.source, detail.previewUrl));
         return { ...(values.code ? observed : withoutCode(observed)), score: item.score };
       } catch (error) {
         return { ...item, detailError: error.message };
@@ -287,8 +287,8 @@ function printFiles(detail, code) {
 async function cmdShow({ values, positionals }) {
   const project = values.project ? inspectProject(values.project) : null;
   const detail = await loadDetail(positionals[0]);
-  const observed = cleanDescription(withObservedGaps(detail, await previewStatus(detail.previewUrl)));
-  const output = { ...(values.code ? observed : withoutCode(observed)), project: project && { react: project.react, tailwind: project.tailwind, missingDependencies: missingDependencies(detail, project) } };
+  const observed = cleanDescription(withObservedGaps(detail, await previewStatus(detail.source, detail.previewUrl)));
+  const output = { ...(values.code ? observed : withoutCode(observed)), project: project && { react: project.react, tailwind: project.tailwind, missingDependencies: missingDependencies(detail, project), unverifiedDependencies: unverifiedDependencies(detail) } };
   if (values.json) return console.log(JSON.stringify(output, null, 2));
   console.log(`${output.id}\n${output.title}${output.description ? ` — ${output.description}` : ''}`);
   console.log(`preview: ${output.previewUrl ?? 'none'} (${output.previewStatus})`);
@@ -333,22 +333,27 @@ function writeNoFollow(file, content) {
 // Downloads example source only. Content is untrusted: it is written as data and never executed.
 async function cmdGet({ values, positionals }) {
   const loaded = await loadDetail(positionals[0]);
-  const detail = cleanDescription(withObservedGaps(loaded, await previewStatus(loaded.previewUrl)));
+  const detail = cleanDescription(withObservedGaps(loaded, await previewStatus(loaded.source, loaded.previewUrl)));
   const base = path.resolve(values.out ?? 'clayui-examples');
   const parts = [detail.source, ...detail.name.split('/')];
   const destination = path.join(base, ...parts);
   if ((existsSync(destination) || isLink(destination)) && !values.force) throw new UsageError(`Folder already exists: ${destination}. Use --force`);
+  const earlier = findAgentInstruction(destination);
+  if (earlier) throw new UsageError(`Folder ${destination} contains agent instruction files from an earlier download (${earlier}). Delete the folder and run get again.`);
   const skipped = [...(detail.skipped ?? [])];
   const unsafe = [];
+  const instructions = [];
   const files = [];
   for (const file of detail.files ?? []) {
     if (typeof file.content !== 'string' || !file.content.length) { skipped.push(file.target || file.path); continue; }
     const relative = safeRelative(file.target || file.path);
-    if (relative) files.push({ relative, content: file.content });
+    if (relative && agentInstructionPath(`${detail.name}/${relative}`)) { skipped.push(file.target || file.path); instructions.push(relative); }
+    else if (relative) files.push({ relative, content: file.content });
     else { skipped.push(file.target || file.path); unsafe.push(file.target || file.path); }
   }
   for (const warning of detail.sourceWarnings ?? []) console.error(`Uwaga: ${warning}`);
   for (const file of unsafe) console.error(`Skipped unsafe path: ${file}`);
+  for (const file of instructions) console.error(`Skipped agent instruction file: ${file}`);
   if (!files.length) {
     const reason = detail.gaps.includes('needs-key') ? ': requires API_KEY_21ST' : detail.gaps.includes('pro-only') ? ': paid item, requires a license from its author' : '';
     console.error(`Code for ${detail.id} is unavailable${reason}; no source files were downloaded. Usage documentation alone is not source code. Preview: ${detail.previewUrl ?? 'none'}`);

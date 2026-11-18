@@ -3,7 +3,7 @@
 
 use crate::js::{self, coalesce, encode_uri_component as enc, truthy, Object};
 use crate::net::{
-    fetch_json, fetch_json_with, fetch_text, host_of, join, map_limit, request, Fail, Headers, Res,
+    fetch_json, fetch_json_with, fetch_text, join, map_limit, request, Fail, Headers, Res,
 };
 use crate::search::Group;
 use serde_json::{json, Value};
@@ -354,7 +354,13 @@ fn enrich(spec: &RegistrySpec, name: &str, preview: &Value, catalog: &Catalog) -
                 .map(|entry| entry.extra.clone())
                 .unwrap_or_default(),
             Enrich::Shadcn if truthy(Some(preview)) => {
-                let text = fetch_text(&format!("{}.md", js::string_of(preview)))?;
+                let url = format!("{}.md", js::string_of(preview));
+                let text =
+                    match crate::net::fetch_on_hosts(&url, &registry_preview_hosts(spec.previews))?
+                    {
+                        Some(reply) if reply.ok() => reply.text()?,
+                        _ => return Ok(Extra::default()),
+                    };
                 Extra {
                     description: Some(json!(frontmatter(&text, "description"))),
                     ..Extra::default()
@@ -1658,22 +1664,52 @@ pub fn source_by_id(id: &str) -> Option<&'static Source> {
 }
 
 /// ok = page exists, broken = page is gone, unverified = could not tell, none = no page known.
-pub fn preview_status(url: Option<&Value>) -> &'static str {
+fn registry_preview_hosts(previews: Previews) -> Vec<String> {
+    let host = match previews {
+        Previews::Shadcn => "ui.shadcn.com",
+        Previews::Magic => "magicui.design",
+        Previews::Aceternity => "ui.aceternity.com",
+        Previews::Kokonut => "kokonutui.com",
+        Previews::Beautiful => "www.beautifului.dev",
+    };
+    vec![host.to_string()]
+}
+
+/// Documentation hosts whose preview links may be requested; shared hosting is never trusted.
+pub fn preview_hosts(source: &Source) -> Vec<String> {
+    let host = |url: &str| url::Url::parse(url).ok()?.host_str().map(str::to_string);
+    match &source.kind {
+        Kind::Registry(spec) => registry_preview_hosts(spec.previews),
+        Kind::Community(spec) => spec
+            .preview
+            .and_then(host)
+            .or_else(|| {
+                host(spec.index).filter(|h| h != "raw.githubusercontent.com" && h != "github.com")
+            })
+            .into_iter()
+            .collect(),
+        Kind::Single(spec) => spec.docs.and_then(host).into_iter().collect(),
+        Kind::Radix => vec!["www.radix-ui.com".into()],
+        Kind::BaseUi => vec!["base-ui.com".into()],
+        Kind::UiSdk => vec!["ui-sdk.dev".into()],
+        Kind::RareUi => vec!["shitui.in".into()],
+        Kind::Live21st => vec!["21st.dev".into()],
+    }
+}
+
+pub fn preview_status(source: Option<&Source>, url: Option<&Value>) -> &'static str {
     if !truthy(url) {
         return "none";
     }
-    let Some(url) = url.and_then(Value::as_str) else {
+    let (Some(source), Some(url)) = (source, url.and_then(Value::as_str)) else {
         return "unverified";
     };
     if url.contains('#') {
         return "unverified";
     }
-    let Ok(reply) = request(url, &Vec::new()) else {
+    let Ok(Some(reply)) = crate::net::fetch_on_hosts(url, &preview_hosts(source)) else {
         return "unverified";
     };
-    if host_of(&reply.final_url).ok() != host_of(&reply.requested_url).ok() {
-        return "unverified";
-    }
     if reply.ok() {
         "ok"
     } else if matches!(reply.status, 404 | 410) {
