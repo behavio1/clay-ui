@@ -39,6 +39,12 @@ npx skills add behavio1/clay-ui
 
 Clay UI never installs a component or a dependency into your project.
 
+## Before and after
+
+![Five screens of one app. Left: a typical template. Right: the same screens rebuilt from Aceternity UI, Avara, Spectrum UI, devl and Magic UI components found with Clay UI](https://raw.githubusercontent.com/behavio1/clay-ui/main/docs/images/before-after.jpg)
+
+Five screens of one made-up app. On the left, a typical template. On the right, the same screens rebuilt from components Clay UI found: `aceternity/hero-highlight`, `avara/pricing-section`, `spectrum/insight-cards`, `devl/split-sign-up` and `magicui/bento-grid`. [Watch the 53-second film or flip them yourself](https://clayui.behavio.one/#before-after).
+
 ## Libraries
 
 Every library here was checked before it went in: its license allows passing the source on, its code can be fetched by a machine, and a sample of its components was read. Counts are components in the index after removing demos and paid items, as of November 2026. Run `clayui sources` for the current list. Admission rules per library are in [docs/sources.md](docs/sources.md).
