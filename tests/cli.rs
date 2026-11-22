@@ -2507,6 +2507,111 @@ fn ui_sdk_indexes_react_docs_and_downloads_only_the_component_examples() {
     assert_eq!(usage_only.code, 3, "{}", usage_only.out);
 }
 
+#[test]
+fn tremor_blocks_describe_each_variant_and_get_follows_local_imports() {
+    let tree = json!({"tree":[
+        {"path":"src/content/components/kpi-cards/index.ts", "type":"blob"},
+        {"path":"src/content/components/kpi-cards/kpi-card-01.tsx", "type":"blob"},
+        {"path":"src/content/components/new-things/thing-01.tsx", "type":"blob"},
+        {"path":"src/components/Card.tsx", "type":"blob"},
+        {"path":"src/components/SparkChart.tsx", "type":"blob"},
+        {"path":"src/components/Unused.tsx", "type":"blob"},
+        {"path":"src/lib/utils.ts", "type":"blob"}
+    ]});
+    let server = mock(move |call| {
+        if call.path.contains("/commits/HEAD") {
+            return ok(json!({"sha":"c0ffee"}).to_string());
+        }
+        if call.path.contains("/git/trees/") {
+            return ok(tree.to_string());
+        }
+        if call.path.contains("kpi-card-01.tsx") {
+            return ok("import { Card } from '@/components/Card';\nimport { SparkAreaChart } from '@/components/SparkChart';\nexport default () => <Card><h3>Revenue</h3><SparkAreaChart /></Card>;\n");
+        }
+        if call.path.contains("thing-01.tsx") {
+            return Reply::Respond(500, "down".into());
+        }
+        if call.path.contains("/src/components/Card.tsx") {
+            return ok("import { cx } from '@/lib/utils';\nexport const Card = () => null;\n");
+        }
+        if call.path.contains("/src/components/SparkChart.tsx") {
+            return ok(
+                "import { cx } from '../lib/utils';\nimport { AreaChart } from 'recharts';\n",
+            );
+        }
+        if call.path.contains("/src/lib/utils.ts") {
+            return ok("import clsx from 'clsx';\nexport const cx = clsx;\n");
+        }
+        Reply::Respond(404, "unexpected URL".into())
+    });
+    let cache = temp();
+    let synced = cli(
+        &["sync", "--source", "tremor-blocks", "--json"],
+        &server,
+        &cache,
+    );
+    assert_eq!(synced.code, 0, "{}", synced.err);
+    let items = read_json(cache.join("index.json"))["sources"]["tremor-blocks"]["items"].clone();
+    let items = items.as_array().unwrap();
+    assert_eq!(items.len(), 2);
+    let kpi = &items[0];
+    assert_eq!(kpi["id"], "tremor-blocks/kpi-card-01");
+    assert_eq!(kpi["title"], "KPI card 01");
+    assert!(kpi["description"]
+        .as_str()
+        .unwrap()
+        .ends_with("Built with spark chart. Headings: \"Revenue\"."));
+    assert_eq!(
+        kpi["previewUrl"],
+        "https://blocks.tremor.so/blocks/kpi-cards"
+    );
+    assert_eq!(kpi["license"], "MIT");
+    assert_eq!(kpi["example"], true);
+    assert_eq!(kpi["gaps"], json!(["unmaintained"]));
+    // An unknown category or an unreadable block still enters the catalog.
+    assert_eq!(items[1]["id"], "tremor-blocks/thing-01");
+
+    let out = temp();
+    let got = cli(
+        &[
+            "get",
+            "tremor-blocks/kpi-card-01",
+            "--json",
+            "--out",
+            out.to_str().unwrap(),
+        ],
+        &server,
+        &cache,
+    );
+    assert_eq!(got.code, 0, "{}", got.err);
+    let meta = read_json(out.join("tremor-blocks/kpi-card-01/clayui.json"));
+    let mut files: Vec<&str> = meta["files"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|file| file.as_str().unwrap())
+        .collect();
+    files.sort_unstable();
+    assert_eq!(
+        files,
+        vec![
+            "src/components/Card.tsx",
+            "src/components/SparkChart.tsx",
+            "src/content/components/kpi-cards/kpi-card-01.tsx",
+            "src/lib/utils.ts",
+        ]
+    );
+    assert_eq!(meta["sourceRef"], "c0ffee");
+    let shown = cli(
+        &["show", "tremor-blocks/kpi-card-01", "--json"],
+        &server,
+        &cache,
+    );
+    assert_eq!(shown.code, 0, "{}", shown.err);
+    let shown: Value = serde_json::from_str(&shown.out).unwrap();
+    assert_eq!(shown["missingLocalImports"], json!([]));
+}
+
 // --- Audit decisions (0.3.2) --------------------------------------------------
 
 fn preview_of(preview: &str, server: &Mock) -> String {

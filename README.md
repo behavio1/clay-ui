@@ -33,7 +33,7 @@ npx skills add behavio1/clay-ui
 ![How Clay UI works: you ask, your agent reads the need, Clay UI searches a local index, you pick a variant, Clay UI downloads the source from the original library, and your agent shapes it into your project](https://raw.githubusercontent.com/behavio1/clay-ui/main/docs/images/how-clay-ui-works.jpg)
 
 1. **You describe it.** Tell your agent what you need.
-2. **Clay UI searches.** It looks through the [37 libraries below](#libraries) in a local index on your machine.
+2. **Clay UI searches.** It looks through the [39 libraries below](#libraries) in a local index on your machine.
 3. **You pick a variant.** Your agent shows the best matches with preview links.
 4. **Your agent shapes it.** The source lands in a local folder as an example. Your agent rewrites it to fit your stack, tokens and style.
 
@@ -88,6 +88,8 @@ Every library here was checked before it went in: its license allows passing the
 | Vengeance UI | Animated components, partly overlapping shadcn/ui basics | 135 | MIT | [Ashutoshx7/VengeanceUI](https://github.com/Ashutoshx7/VengeanceUI) | [vengenceui.com](https://vengenceui.com) |
 | Componentry | Animated interactive components and a few blocks | 56 | MIT | [harshjdhv/componentry](https://github.com/harshjdhv/componentry) | [componentry.dev](https://componentry.dev) |
 | asciicn | ASCII-art and shader renderers for React, downloaded together with their engine | 64 | MIT | [opencoredev/asciicn](https://github.com/opencoredev/asciicn) | [asciicn.dev](https://asciicn.dev) |
+| Tremor | Dashboard components on Radix, Recharts and Tailwind: charts, bar lists, category bars, trackers, date pickers. No longer maintained | 39 | Apache-2.0 | [tremorlabs/tremor](https://github.com/tremorlabs/tremor) | [tremor.so](https://www.tremor.so) |
+| Tremor Blocks | Dashboard blocks built on Tremor: KPI cards, chart tooltips, filter bars, billing and usage, status monitoring. No longer maintained | 323 | MIT | [tremorlabs/tremor-blocks](https://github.com/tremorlabs/tremor-blocks) | [blocks.tremor.so](https://blocks.tremor.so) |
 
 Downloaded components keep the terms set by their authors. Keep their copyright and license notices when you adapt the code.
 
@@ -114,7 +116,7 @@ We reviewed these and left them out for now:
 - **Open Components**: guidelines, not component code.
 - **shadway**: already reachable through 21st.dev.
 
-Not yet added because each needs its own loader: HeroUI, Headless UI, Tremor, HyperUI, TailGrids, Bencho, EasyUI, Animata, Feral UI and Tailark.
+Not yet added because each needs its own loader: HeroUI, Headless UI, HyperUI, TailGrids, Bencho, EasyUI, Animata, Feral UI and Tailark.
 
 A library can come back when its license or access changes. To suggest one, open an issue with a link to it and how its components can be fetched.
 

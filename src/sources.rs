@@ -11,6 +11,8 @@ use std::collections::HashMap;
 
 #[path = "community.rs"]
 mod community;
+#[path = "tremor.rs"]
+mod tremor;
 
 const KOKONUT_RAW: &str = "https://raw.githubusercontent.com/kokonut-labs/kokonutui/main/public/r";
 const COMPONENT_TYPES: [&str; 3] = ["registry:ui", "registry:component", "registry:block"];
@@ -1461,6 +1463,7 @@ fn search_21st_by_tags(source: &Source, groups: &[Group]) -> Res<(Vec<Object>, V
 pub enum Kind {
     Registry(RegistrySpec),
     Community(community::Spec),
+    Tremor(tremor::Spec),
     Single(SinglePackage),
     Radix,
     BaseUi,
@@ -1521,6 +1524,7 @@ impl Source {
             Kind::Registry(spec) if self.id == "aceternity" => load_aceternity(self, spec),
             Kind::Registry(spec) => load_registry(self, spec),
             Kind::Community(spec) => community::load(self, spec),
+            Kind::Tremor(spec) => tremor::load(self, spec),
             Kind::Single(spec) => load_single(self, spec),
             Kind::Radix => load_radix(self),
             Kind::BaseUi => load_base_ui(self),
@@ -1538,6 +1542,7 @@ impl Source {
             }
             Kind::Registry(spec) => registry_detail(spec, item),
             Kind::Community(spec) => community::detail(spec, item),
+            Kind::Tremor(_) => tremor::detail(item),
             Kind::Single(_) | Kind::Radix | Kind::BaseUi | Kind::UiSdk => package_detail(item),
             Kind::RareUi => rareui_detail(item),
             Kind::Live21st => {
@@ -1635,6 +1640,8 @@ pub static SOURCES: &[Source] = &[
     single("cmdk", "cmdk", SinglePackage { package: "cmdk", docs: None, description: "Fast, composable command menu for React (Cmd+K palette). No live demo page: the old site redirects to the GitHub repository.", keywords: &["command", "menu", "palette", "search", "combobox", "cmdk"], curated: true, unmaintained: false, repo: "dip/cmdk", dir: "cmdk/src" }),
     single("number-flow", "NumberFlow", SinglePackage { package: "@number-flow/react", docs: Some("https://number-flow.barvian.me"), description: "Animated number component with digit transitions.", keywords: &["number", "counter", "animated", "price", "stat"], curated: true, unmaintained: false, repo: "barvian/number-flow", dir: "packages/react/src" }),
     community::source("evilcharts", "Evil Charts", "MIT", community::Spec { index: "https://evilcharts.com/r/registry.json", item: "https://evilcharts.com/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/legions-developer/evilcharts/HEAD/LICENSE", policy: community::Policy::Public }),
+    tremor::source("tremor", "Tremor", "Apache-2.0", tremor::Spec { repo: "tremorlabs/tremor", part: tremor::Part::Raw, docs_host: "www.tremor.so" }),
+    tremor::source("tremor-blocks", "Tremor Blocks", "MIT", tremor::Spec { repo: "tremorlabs/tremor-blocks", part: tremor::Part::Blocks, docs_host: "blocks.tremor.so" }),
     community::source("origin", "Origin UI", "MIT", community::Spec { index: "https://raw.githubusercontent.com/cosscom/ui/main/apps/origin/registry.json", item: "https://raw.githubusercontent.com/cosscom/ui/main/apps/origin/public/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/cosscom/ui/HEAD/apps/origin/LICENSE.md", policy: community::Policy::Public }),
     community::source("kibo", "Kibo UI", "MIT", community::Spec { index: "https://www.kibo-ui.com/r/registry.json", item: "https://www.kibo-ui.com/r/{name}.json", preview: Some("https://www.kibo-ui.com/components/{name}"), license_url: "https://raw.githubusercontent.com/shadcnblocks/kibo/HEAD/license.md", policy: community::Policy::Public }),
     community::source("reui", "ReUI", "MIT", community::Spec { index: "https://reui.io/r/styles/base-nova/registry.json", item: "https://reui.io/r/styles/base-nova/{name}.json", preview: Some("https://reui.io/docs/{name}"), license_url: "https://raw.githubusercontent.com/keenthemes/reui/HEAD/LICENSE.md", policy: community::Policy::UiOnly }),
@@ -1688,6 +1695,7 @@ pub fn preview_hosts(source: &Source) -> Vec<String> {
             })
             .into_iter()
             .collect(),
+        Kind::Tremor(spec) => vec![spec.docs_host.into()],
         Kind::Single(spec) => spec.docs.and_then(host).into_iter().collect(),
         Kind::Radix => vec!["www.radix-ui.com".into()],
         Kind::BaseUi => vec!["base-ui.com".into()],

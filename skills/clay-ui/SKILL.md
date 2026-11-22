@@ -5,7 +5,7 @@ description: Find ready-made UI components and component libraries (shadcn/ui, R
 
 # Clay UI
 
-Clay UI searches real component libraries and downloads source code as examples. You adapt that code to the user's project. It never installs anything. Public registries also include Evil Charts, Origin UI, Kibo UI, ReUI (public UI modules), blocks.so, Motion Primitives, SmoothUI, Fancy Components, BeUI, UIArc, devl.dev, Cult UI, 8bitcn, Shadcn Space (verified free subset), UI Layouts, Spectrum UI, Ruixen UI, Watermelon UI, Avara UI, HextaUI (UI modules), Vengeance UI, Componentry, asciicn and UI SDK from Vercel Labs (unstyled, accessible primitives in beta). List current source IDs with `clayui sources`. Registry dependencies, including styles and engines, remain requirements to inspect and adapt.
+Clay UI searches real component libraries and downloads source code as examples. You adapt that code to the user's project. It never installs anything. Public registries also include Evil Charts, Origin UI, Kibo UI, ReUI (public UI modules), blocks.so, Motion Primitives, SmoothUI, Fancy Components, BeUI, UIArc, devl.dev, Cult UI, 8bitcn, Shadcn Space (verified free subset), UI Layouts, Spectrum UI, Ruixen UI, Watermelon UI, Avara UI, HextaUI (UI modules), Vengeance UI, Componentry, asciicn, Tremor and Tremor Blocks (dashboard components and blocks: KPI cards, charts, chart tooltips, filter bars, trackers; upstream inactive since 2025), and UI SDK from Vercel Labs (unstyled, accessible primitives in beta). List current source IDs with `clayui sources`. Registry dependencies, including styles and engines, remain requirements to inspect and adapt.
 
 Run everything with `npx -y @behavio1/clayui@latest`. Always add `--json` to `search`, `show` and `get`.
 
@@ -80,7 +80,9 @@ If a need has no good component (trust badges and full order summaries came back
    - **Registry code** (`components/`, `registry/`): rewrite into the project. Fix placeholder imports like `from "cn"`. Replace colors, radii, spacing, copy. Classes from `registryDependencies` such as `text-ink` are not downloaded; map them to project tokens.
    - **Package libraries** (`source/` plus `USAGE.md`, such as Sonner or Radix): `source/` is the library's internals. Import the package and follow `USAGE.md`; do not copy the internals.
    - **UI SDK** (`ui-sdk/…`): `source/` holds upstream's React examples instead: `components/<name>/react/` has one file per variant (`demo.tsx` first), plus that component's CSS and the shared example tokens in `styles/`. Keep importing `@ui-sdk/react` (it needs React 19 or newer), pick the variant that fits, and restyle it with the project's tokens.
+   - **Tremor** (`tremor/…`, `tremor-blocks/…`): files keep upstream's `src/` layout: the component or block plus every local file it imports (`src/components/`, `src/lib/`, `src/utils/`). Map the `@/` alias to the project's own, and reuse the project's existing Card, `cx`/`cn` and chart pieces instead of adding duplicates. Blocks target Tailwind v3 with Recharts 2; components target Tailwind v4. Translate their gray and blue palette to the project's tokens.
    - Add only dependencies the final code imports. Ask before a heavy one.
+   - When the screen is built, run the Impeccable skill's `critique` or `polish` on it if that skill is installed; otherwise review it yourself against the user's goal.
    - Delete `.clayui-examples` when finished.
 
 ## Reading results
