@@ -3,6 +3,15 @@ name: Release
 on:
   push:
     tags: ['v*']
+  # Finish an earlier release from its tag, for example after a failed publish.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to build and publish, such as v0.4.0
+        required: true
+
+env:
+  RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
 
 permissions:
   contents: read
@@ -12,9 +21,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
       - name: The tag, launcher, native dependencies and Cargo version must agree
         run: |
-          tag="${GITHUB_REF_NAME#v}"
+          tag="${RELEASE_TAG#v}"
           npm_version="$(node -p "require('./package.json').version")"
           cargo_version="$(grep -m1 '^version' Cargo.toml | sed -E 's/.*"(.+)".*/\1/')"
           test "$tag" = "$npm_version" && test "$tag" = "$cargo_version"
@@ -36,6 +47,8 @@ jobs:
       CC_aarch64_unknown_linux_musl: musl-gcc
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24.22.1
@@ -84,6 +97,8 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24.22.1
@@ -91,14 +106,31 @@ jobs:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           path: dist-npm
+      # Publishing is idempotent so a rerun finishes a partial release; the registry lags a few minutes.
       - name: Publish the platform packages with OIDC
         run: |
+          set -o pipefail
+          version="$(node -p "require('./package.json').version")"
+          published() { npm view "$1@$version" version >/dev/null 2>&1; }
+          publish() {
+            published "$1" && { echo "$1@$version is already published"; return 0; }
+            npm publish "$2" --access public --provenance 2>&1 | tee publish.log && return 0
+            grep -q 'cannot publish over' publish.log && { echo "$1@$version is already published"; return 0; }
+            return 1
+          }
           for folder in dist-npm/clayui-*; do
             chmod 755 "$folder"/clayui*
-            npm publish "./$folder" --access public --provenance
+            publish "$(basename "$folder")" "./$folder"
           done
           for name in $(node -p "Object.keys(require('./package.json').optionalDependencies).join(' ')"); do
-            npm view "$name@$(node -p "require('./package.json').version")" version
+            for attempt in $(seq 1 30); do published "$name" && break; sleep 20; done
+            npm view "$name@$version" version
           done
       - name: Publish the launcher with OIDC
-        run: npm publish --access public --provenance
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if npm view "@behavio1/clayui@$version" version >/dev/null 2>&1; then
+            echo "@behavio1/clayui@$version is already published"
+          else
+            npm publish --access public --provenance
+          fi
