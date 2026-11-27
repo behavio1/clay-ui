@@ -2612,6 +2612,186 @@ fn tremor_blocks_describe_each_variant_and_get_follows_local_imports() {
     assert_eq!(shown["missingLocalImports"], json!([]));
 }
 
+fn kubai_mock(license: &'static str) -> Mock {
+    let tree = json!({"tree":[
+        {"path":"icons/folder.js", "type":"blob"},
+        {"path":"icons/_interface.js", "type":"blob"},
+        {"path":"icons-line/folder.json", "type":"blob"},
+        {"path":"icons-line/a-arrow-down.json", "type":"blob"},
+        {"path":"packages/core/src/kit.js", "type":"blob"},
+        {"path":"packages/react/src/create.js", "type":"blob"},
+        {"path":"packages/react/src/create.d.ts", "type":"blob"},
+        {"path":"packages/react/README.md", "type":"blob"},
+        {"path":"src/engine.js", "type":"blob"},
+        {"path":"LICENSE-ICONS", "type":"blob"}
+    ]});
+    mock(move |call| {
+        let path = call.path.as_str();
+        if path.ends_with("/registry.npmjs.org/kubai-icons/latest") {
+            return ok(json!({"version":"0.16.0","license":license}).to_string());
+        }
+        if path.ends_with("/kubai-icons@0.16.0/dist/icons.json") {
+            return ok(json!([
+                {"name":"folder","category":"files","tags":["directory","files"]},
+                {"name":"folder-plus","category":"files","tags":["directory","add"],"base":"folder","badge":"plus"}
+            ]).to_string());
+        }
+        if path.ends_with("/kubai-icons@0.16.0/dist/duotone/icons.json") {
+            return ok("[]");
+        }
+        if path.ends_with("/kubai-icons@0.16.0/dist/line/icons.json") {
+            return ok(json!([
+                {"name":"folder","category":"files","tags":[]},
+                {"name":"a-arrow-down","category":"text","tags":[],"only":true}
+            ])
+            .to_string());
+        }
+        if path.contains("/commits/kubai-icons%400.16.0") {
+            return ok(json!({"sha":"c0ffee"}).to_string());
+        }
+        if path.contains("/git/trees/c0ffee") {
+            return ok(tree.to_string());
+        }
+        if path.ends_with("/c0ffee/icons/folder.js") {
+            return ok("import { defineIcon } from '../packages/core/src/kit.js';\nimport { DISC } from './_interface.js';\nimport '../src/engine.js';\nexport default defineIcon({ name: 'folder' });\n");
+        }
+        if path.ends_with("/c0ffee/icons/_interface.js") {
+            return ok(
+                "import { f } from '../packages/core/src/kit.js';\nexport const DISC = 1;\n",
+            );
+        }
+        if path.ends_with("/c0ffee/packages/core/src/kit.js") {
+            return ok("export const f = (n) => n;\n");
+        }
+        if path.ends_with("/c0ffee/packages/react/src/create.js") {
+            return ok("import { createElement } from 'react';\nimport { animate } from 'kubai-icons/runtime';\n");
+        }
+        if path.contains("/c0ffee/") {
+            return ok("{}");
+        }
+        Reply::Respond(404, "unexpected URL".into())
+    })
+}
+
+#[test]
+fn kubai_icons_fold_variants_stay_out_of_default_search_and_get_reads_only_mit_paths() {
+    let server = kubai_mock("MIT");
+    let cache = temp();
+    let synced = cli(
+        &["sync", "--source", "kubai-icons", "--json"],
+        &server,
+        &cache,
+    );
+    assert_eq!(synced.code, 0, "{}", synced.err);
+    let items = read_json(cache.join("index.json"))["sources"]["kubai-icons"]["items"].clone();
+    let items = items.as_array().unwrap();
+    assert_eq!(items.len(), 2);
+    let folder = &items[1];
+    assert_eq!(folder["id"], "kubai-icons/folder");
+    assert_eq!(folder["title"], "Folder icon");
+    assert_eq!(
+        folder["variants"],
+        json!({"layered":["folder","folder-plus"],"line":["folder"]})
+    );
+    assert_eq!(
+        folder["previewUrl"],
+        "https://icons.kubai.design/icons/folder/"
+    );
+    assert_eq!(folder["license"], "MIT");
+    assert_eq!(folder["sourceCode"]["tag"], "kubai-icons@0.16.0");
+    // Only the line style draws this object, and the site has no page for it.
+    assert_eq!(items[0]["id"], "kubai-icons/a-arrow-down");
+    assert_eq!(items[0]["previewUrl"], Value::Null);
+
+    // Icons answer only when the source is named.
+    let unscoped = cli(&["search", "folder", "--json"], &server, &cache);
+    assert_eq!(unscoped.code, 0, "{}", unscoped.err);
+    assert_eq!(unscoped.json()["results"], json!([]));
+    let scoped = cli(
+        &["search", "folder icon", "--source", "kubai-icons", "--json"],
+        &server,
+        &cache,
+    );
+    assert_eq!(scoped.code, 0, "{}", scoped.err);
+    assert_eq!(scoped.json()["results"][0]["id"], "kubai-icons/folder");
+
+    // `icons` is the same scoped search without naming the source.
+    let icons = cli(&["icons", "folder icon", "--json"], &server, &cache);
+    assert_eq!(icons.code, 0, "{}", icons.err);
+    assert_eq!(icons.json()["results"], scoped.json()["results"]);
+    let other = cli(&["icons", "folder", "--source", "shadcn"], &server, &cache);
+    assert_eq!(other.code, 2);
+
+    let out = temp();
+    let got = cli(
+        &[
+            "get",
+            "kubai-icons/folder",
+            "--json",
+            "--out",
+            out.to_str().unwrap(),
+        ],
+        &server,
+        &cache,
+    );
+    assert_eq!(got.code, 0, "{}", got.err);
+    let meta = read_json(out.join("kubai-icons/folder/clayui.json"));
+    let mut files: Vec<&str> = meta["files"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|file| file.as_str().unwrap())
+        .collect();
+    files.sort_unstable();
+    assert_eq!(
+        files,
+        vec![
+            "LICENSE-ICONS",
+            "USAGE.md",
+            "icons-line/folder.json",
+            "icons/_interface.js",
+            "icons/folder.js",
+            "packages/core/src/kit.js",
+            "packages/react/src/create.d.ts",
+            "packages/react/src/create.js",
+        ]
+    );
+    assert_eq!(meta["sourceRef"], "c0ffee");
+    let usage = fs::read_to_string(out.join("kubai-icons/folder/USAGE.md")).unwrap();
+    assert!(usage.contains("`import { Folder, FolderPlus } from 'kubai-icons-react'`"));
+    assert!(usage.contains("`import { Folder } from 'kubai-icons-react/line'`"));
+    // The source-available engine is listed as skipped and never requested.
+    let shown = cli(&["show", "kubai-icons/folder", "--json"], &server, &cache);
+    assert_eq!(shown.code, 0, "{}", shown.err);
+    let shown = shown.json();
+    assert_eq!(shown["skipped"], json!(["src/engine.js"]));
+    assert_eq!(
+        shown["dependencies"],
+        json!(["kubai-icons-react", "react", "kubai-icons"])
+    );
+    let calls = server.calls.lock().unwrap();
+    assert!(calls
+        .iter()
+        .all(|call| !call.path.ends_with("/src/engine.js")));
+}
+
+#[test]
+fn kubai_icons_fail_the_source_when_the_package_leaves_mit() {
+    let server = kubai_mock("SEE LICENSE IN LICENSE");
+    let cache = temp();
+    let synced = cli(
+        &["sync", "--source", "kubai-icons", "--json"],
+        &server,
+        &cache,
+    );
+    assert_ne!(synced.code, 0);
+    let entry = read_json(cache.join("index.json"))["sources"]["kubai-icons"].clone();
+    assert!(entry["error"]
+        .as_str()
+        .unwrap()
+        .contains("no longer MIT licensed"));
+}
+
 // --- Audit decisions (0.3.2) --------------------------------------------------
 
 fn preview_of(preview: &str, server: &Mock) -> String {

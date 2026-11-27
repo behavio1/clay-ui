@@ -126,7 +126,7 @@ fn kebab(name: &str) -> String {
 }
 
 /// Search words that the title and description do not already say, so no variant is keyword-stuffed.
-fn extra_words<'a>(words: Vec<&'a str>, title: &str, description: &str) -> Vec<&'a str> {
+pub(super) fn extra_words<'a>(words: Vec<&'a str>, title: &str, description: &str) -> Vec<&'a str> {
     let said = format!("{title} {description}").to_lowercase();
     let mut seen = HashSet::new();
     words

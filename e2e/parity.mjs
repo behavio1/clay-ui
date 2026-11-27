@@ -28,7 +28,7 @@ const llms = `# Base UI\n\n## Overview\n- [Intro](https://base-ui.com/react/over
 
 // Sources added after the Node reference implementation. Parity covers only the sources both CLIs share,
 // so these registries answer empty and their entries are left out of the comparison.
-const RUST_ONLY = ['evilcharts', 'origin', 'kibo', 'reui', 'blocks-so', 'motion-primitives', 'smoothui', 'fancy', 'beui', 'uiarc', 'devl', 'cult', '8bitcn', 'shadcn-space', 'ui-layouts', 'spectrum', 'ruixen', 'watermelon', 'avara', 'hextaui', 'vengeance', 'componentry', 'asciicn', 'tremor', 'tremor-blocks'];
+const RUST_ONLY = ['evilcharts', 'origin', 'kibo', 'reui', 'blocks-so', 'motion-primitives', 'smoothui', 'fancy', 'beui', 'uiarc', 'devl', 'cult', '8bitcn', 'shadcn-space', 'ui-layouts', 'spectrum', 'ruixen', 'watermelon', 'avara', 'hextaui', 'vengeance', 'componentry', 'asciicn', 'tremor', 'tremor-blocks', 'kubai-icons'];
 const RUST_ONLY_INDICES = ['evilcharts.com/r/registry.json', 'raw.githubusercontent.com/cosscom/ui/main/apps/origin/registry.json', 'www.kibo-ui.com/r/registry.json', 'reui.io/r/styles/base-nova/registry.json', 'blocks.so/r/registry.json', 'motion-primitives.com/c/registry.json', 'smoothui.dev/r/registry.json', 'fancycomponents.dev/r/registry.json', 'beui.dev/r/registry.json', 'uiarc.dev/r/registry.json', 'devl.dev/r/registry.json', 'www.cult-ui.com/r/registry.json', 'www.8bitcn.com/r/registry.json', 'shadcnspace.com/r/registry.json', 'raw.githubusercontent.com/shadcnspace/shadcnspace/main/registry.json', 'ui-layouts.com/r/registry.json', 'ui.spectrumhq.in/r/registry.json', 'ruixen.com/registry.json', 'registry.watermelon.sh/r/registry.json', 'avaraui.com/r/registry.json', 'hextaui.com/r/registry.json', 'vengenceui.com/r/registry.json', 'componentry.dev/r/registry.json', 'asciicn.dev/r/registry.json'];
 const rustOnlyLine = (line) => RUST_ONLY.some((id) => new RegExp(`(^|[\\s"/])${id.replace('.', '\\.')}([\\s":/]|$)`).test(line));
 const sharedOnly = (result) => ({ ...result, out: result.out.split('\n').filter((line) => !rustOnlyLine(line)).join('\n') });
@@ -43,6 +43,8 @@ function withoutRustOnlySkips(result) {
       out = `${JSON.stringify(body, null, 2)}\n`;
     }
   } catch {}
+  // `clayui icons` is a Rust-only command, so its help line is not in the Node reference.
+  out = out.split('\n').filter((line) => !line.startsWith('  clayui icons ')).join('\n');
   return { ...result, out, err: result.err.split('\n').filter((line) => !rustOnlyLine(line)).join('\n') };
 }
 
@@ -52,6 +54,9 @@ const RUST_ONLY_TREES = ['api.github.com/repos/tremorlabs/tremor/git/trees/HEAD?
 function fixture(host, url) {
   if (RUST_ONLY_INDICES.includes(`${host}${url}`)) return { items: [] };
   if (RUST_ONLY_TREES.includes(`${host}${url}`)) return { tree: [] };
+  // Kubai Icons reads its catalog from the published package's metadata.
+  if (host === 'registry.npmjs.org' && url === '/kubai-icons/latest') return { license: 'MIT', version: '0.0.0' };
+  if (host === 'cdn.jsdelivr.net' && url.startsWith('/npm/kubai-icons@0.0.0/')) return [];
   const full = `${host}${url}`;
   if (host === 'ui.shadcn.com') {
     if (url === '/r/index.json') return [...NAMES.map((name) => registryItem(name, { meta: { links: { radix: { docs: `https://ui.shadcn.com/docs/${name}` } } } })), { name: 'hidden', type: 'registry:lib' }, { name: '../bad', type: 'registry:ui' }];

@@ -23,6 +23,7 @@ const HELP: &str =
 
   clayui init [--global] [--target agents|claude|all] [--no-sync]
   clayui search \"<description>\" [--source s] [--limit n] [--details n] [--available-only] [--code] [--json]
+  clayui icons \"<object>\" [--limit n] [--details n] [--json]
   clayui show <id> [--project p] [--code] [--json]
   clayui get <id> [--out folder] [--force] [--json]
   clayui sync [--source s] [--json]
@@ -696,7 +697,10 @@ fn cmd_search(args: &Args) -> CliResult {
     let mut warnings: Vec<String> = Vec::new();
     let mut skipped: Vec<Value> = Vec::new();
     let mut pool: Vec<Object> = Vec::new();
-    for source in sources.iter().filter(|source| !source.live) {
+    for source in sources
+        .iter()
+        .filter(|source| !source.live && (chosen.is_some() || source.in_default_search()))
+    {
         let entry = entries.get(source.id);
         let items = entry
             .and_then(|entry| entry.get("items")?.as_array().cloned())
@@ -981,6 +985,22 @@ fn load_detail(id: Option<&str>) -> CliResult<Object> {
         ))
     })?;
     cached_detail(source, &item).map_err(|error| other(error.message))
+}
+
+/// `icons` is `search` scoped to the icon source, which a default search leaves out.
+fn cmd_icons(args: &Args) -> CliResult {
+    if args.value("source").is_some() {
+        return Err(usage(
+            "icons searches Kubai Icons only; use search --source for another library",
+        ));
+    }
+    let mut scoped = Args {
+        values: args.values.clone(),
+        flags: args.flags.clone(),
+        positionals: args.positionals.clone(),
+    };
+    scoped.values.insert("source".into(), "kubai-icons".into());
+    cmd_search(&scoped)
 }
 
 fn positional(args: &Args) -> Option<&str> {
@@ -1388,6 +1408,7 @@ fn dispatch(arguments: Vec<String>) -> CliResult {
     let command: fn(&Args) -> CliResult = match name {
         "init" => cmd_init,
         "search" => cmd_search,
+        "icons" => cmd_icons,
         "show" => cmd_show,
         "get" => cmd_get,
         "sync" => cmd_sync,

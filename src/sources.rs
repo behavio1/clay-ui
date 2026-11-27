@@ -11,6 +11,8 @@ use std::collections::HashMap;
 
 #[path = "community.rs"]
 mod community;
+#[path = "kubai.rs"]
+mod kubai;
 #[path = "tremor.rs"]
 mod tremor;
 
@@ -1464,6 +1466,7 @@ pub enum Kind {
     Registry(RegistrySpec),
     Community(community::Spec),
     Tremor(tremor::Spec),
+    Kubai(kubai::Spec),
     Single(SinglePackage),
     Radix,
     BaseUi,
@@ -1525,6 +1528,7 @@ impl Source {
             Kind::Registry(spec) => load_registry(self, spec),
             Kind::Community(spec) => community::load(self, spec),
             Kind::Tremor(spec) => tremor::load(self, spec),
+            Kind::Kubai(spec) => kubai::load(self, spec),
             Kind::Single(spec) => load_single(self, spec),
             Kind::Radix => load_radix(self),
             Kind::BaseUi => load_base_ui(self),
@@ -1543,6 +1547,7 @@ impl Source {
             Kind::Registry(spec) => registry_detail(spec, item),
             Kind::Community(spec) => community::detail(spec, item),
             Kind::Tremor(_) => tremor::detail(item),
+            Kind::Kubai(spec) => kubai::detail(spec, item),
             Kind::Single(_) | Kind::Radix | Kind::BaseUi | Kind::UiSdk => package_detail(item),
             Kind::RareUi => rareui_detail(item),
             Kind::Live21st => {
@@ -1550,6 +1555,11 @@ impl Source {
                 detail_21st(item, parts.next().unwrap_or(""), parts.next().unwrap_or(""))
             }
         }
+    }
+
+    /// Searched only when named with `--source`: thousands of icons would crowd out components.
+    pub fn in_default_search(&self) -> bool {
+        !matches!(self.kind, Kind::Kubai(_))
     }
 
     pub fn search_live(&self, groups: &[Group]) -> Res<(Vec<Object>, Vec<String>)> {
@@ -1642,6 +1652,7 @@ pub static SOURCES: &[Source] = &[
     community::source("evilcharts", "Evil Charts", "MIT", community::Spec { index: "https://evilcharts.com/r/registry.json", item: "https://evilcharts.com/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/legions-developer/evilcharts/HEAD/LICENSE", policy: community::Policy::Public }),
     tremor::source("tremor", "Tremor", "Apache-2.0", tremor::Spec { repo: "tremorlabs/tremor", part: tremor::Part::Raw, docs_host: "www.tremor.so" }),
     tremor::source("tremor-blocks", "Tremor Blocks", "MIT", tremor::Spec { repo: "tremorlabs/tremor-blocks", part: tremor::Part::Blocks, docs_host: "blocks.tremor.so" }),
+    kubai::source("kubai-icons", "Kubai Icons", kubai::Spec { repo: "kubai087/kubai-icons", package: "kubai-icons", react: "kubai-icons-react", site: "icons.kubai.design" }),
     community::source("origin", "Origin UI", "MIT", community::Spec { index: "https://raw.githubusercontent.com/cosscom/ui/main/apps/origin/registry.json", item: "https://raw.githubusercontent.com/cosscom/ui/main/apps/origin/public/r/{name}.json", preview: None, license_url: "https://raw.githubusercontent.com/cosscom/ui/HEAD/apps/origin/LICENSE.md", policy: community::Policy::Public }),
     community::source("kibo", "Kibo UI", "MIT", community::Spec { index: "https://www.kibo-ui.com/r/registry.json", item: "https://www.kibo-ui.com/r/{name}.json", preview: Some("https://www.kibo-ui.com/components/{name}"), license_url: "https://raw.githubusercontent.com/shadcnblocks/kibo/HEAD/license.md", policy: community::Policy::Public }),
     community::source("reui", "ReUI", "MIT", community::Spec { index: "https://reui.io/r/styles/base-nova/registry.json", item: "https://reui.io/r/styles/base-nova/{name}.json", preview: Some("https://reui.io/docs/{name}"), license_url: "https://raw.githubusercontent.com/keenthemes/reui/HEAD/LICENSE.md", policy: community::Policy::UiOnly }),
@@ -1696,6 +1707,7 @@ pub fn preview_hosts(source: &Source) -> Vec<String> {
             .into_iter()
             .collect(),
         Kind::Tremor(spec) => vec![spec.docs_host.into()],
+        Kind::Kubai(spec) => vec![spec.site.into()],
         Kind::Single(spec) => spec.docs.and_then(host).into_iter().collect(),
         Kind::Radix => vec!["www.radix-ui.com".into()],
         Kind::BaseUi => vec!["base-ui.com".into()],

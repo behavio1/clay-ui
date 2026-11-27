@@ -33,7 +33,7 @@ npx skills add behavio1/clay-ui
 ![How Clay UI works: you ask, your agent reads the need, Clay UI searches a local index, you pick a variant, Clay UI downloads the source from the original library, and your agent shapes it into your project](https://raw.githubusercontent.com/behavio1/clay-ui/main/docs/images/how-clay-ui-works.jpg)
 
 1. **You describe it.** Tell your agent what you need.
-2. **Clay UI searches.** It looks through the [39 libraries below](#libraries) in a local index on your machine.
+2. **Clay UI searches.** It looks through the [40 libraries below](#libraries) in a local index on your machine.
 3. **You pick a variant.** Your agent shows the best matches with preview links.
 4. **Your agent shapes it.** The source lands in a local folder as an example. Your agent rewrites it to fit your stack, tokens and style.
 
@@ -90,6 +90,7 @@ Every library here was checked before it went in: its license allows passing the
 | asciicn | ASCII-art and shader renderers for React, downloaded together with their engine | 64 | MIT | [opencoredev/asciicn](https://github.com/opencoredev/asciicn) | [asciicn.dev](https://asciicn.dev) |
 | Tremor | Dashboard components on Radix, Recharts and Tailwind: charts, bar lists, category bars, trackers, date pickers. No longer maintained | 39 | Apache-2.0 | [tremorlabs/tremor](https://github.com/tremorlabs/tremor) | [tremor.so](https://www.tremor.so) |
 | Tremor Blocks | Dashboard blocks built on Tremor: KPI cards, chart tooltips, filter bars, billing and usage, status monitoring. No longer maintained | 323 | MIT | [tremorlabs/tremor-blocks](https://github.com/tremorlabs/tremor-blocks) | [blocks.tremor.so](https://blocks.tremor.so) |
+| Kubai Icons | Icons that move on hover, in layered, two-tone and line styles for React. One entry per object, its badged and "off" versions folded in. Searched with `clayui icons` | 1388 | MIT (icons and packages only) | [kubai087/kubai-icons](https://github.com/kubai087/kubai-icons) | [icons.kubai.design](https://icons.kubai.design) |
 
 Downloaded components keep the terms set by their authors. Keep their copyright and license notices when you adapt the code.
 
@@ -150,6 +151,7 @@ Curious how search is measured? Read [how we tune search](https://github.com/beh
 ```text
 clayui init [--global] [--target agents|claude|all] [--no-sync]
 clayui search "<description>" [--source s] [--limit n] [--details n] [--code] [--json]
+clayui icons "<object>" [--limit n] [--details n] [--json]
 clayui show <id> [--project p] [--code] [--json]
 clayui get <id> [--out folder] [--force] [--json]
 clayui sync [--source s] [--json]
